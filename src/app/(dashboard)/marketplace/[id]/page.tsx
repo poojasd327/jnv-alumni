@@ -89,7 +89,7 @@ export default async function ListingDetailPage({
                 )}
               </div>
               {listing.images.length > 1 && (
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {listing.images.slice(1).map((img, i) => (
                     <div key={i} className="relative aspect-square rounded-md overflow-hidden border">
                       <Image src={img} alt={`Image ${i + 2}`} fill className="object-cover" sizes="150px" />
@@ -107,7 +107,7 @@ export default async function ListingDetailPage({
           {/* Details */}
           <div className="space-y-4">
             <div>
-              <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start justify-between gap-2">
                 <h1 className="text-2xl font-bold">{listing.title}</h1>
                 <WishlistButton listingId={listing.id} initialWishlisted={isWishlisted} />
               </div>
@@ -124,7 +124,7 @@ export default async function ListingDetailPage({
               <Badge variant="outline">{conditionLabels[listing.condition] || listing.condition}</Badge>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1">
                 <MapPin className="h-4 w-4" />
                 {listing.location_city}, {listing.location_state}

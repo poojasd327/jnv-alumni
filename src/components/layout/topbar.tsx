@@ -21,6 +21,8 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu"
 import { MobileNav } from "@/components/layout/mobile-nav"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { PageTitle } from "@/components/layout/page-title"
 import { logout } from "@/lib/actions/auth.actions"
 
 interface TopbarProps {
@@ -46,8 +48,14 @@ export function Topbar({ profile }: TopbarProps) {
         <span className="text-sm font-semibold">JNV Alumni</span>
       </div>
 
+      {/* Page Title - desktop only */}
+      <PageTitle />
+
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Dark Mode Toggle */}
+      <ThemeToggle />
 
       {/* User Dropdown */}
       <DropdownMenu>

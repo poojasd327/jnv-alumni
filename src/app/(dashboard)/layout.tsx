@@ -40,7 +40,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex h-screen">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 flex-col border-r bg-card md:flex">
+      <aside className="hidden w-64 shrink-0 flex-col overflow-hidden border-r bg-card md:flex">
         <Sidebar profile={sidebarProfile} />
       </aside>
 

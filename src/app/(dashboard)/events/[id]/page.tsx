@@ -31,9 +31,9 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     <div className="mx-auto max-w-3xl space-y-6">
       <Button variant="ghost" size="sm" render={<Link href="/events" />}><ArrowLeft className="size-4 mr-1" /> Back to Events</Button>
 
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <h1 className="text-2xl font-bold">{event.title}</h1>
-        <Badge className={STATUS_COLORS[event.status] || ""}>{event.status}</Badge>
+        <Badge className={`shrink-0 ${STATUS_COLORS[event.status] || ""}`}>{event.status}</Badge>
       </div>
 
       <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">

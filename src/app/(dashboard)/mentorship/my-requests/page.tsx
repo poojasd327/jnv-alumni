@@ -93,12 +93,12 @@ export default function MyRequestsPage() {
         {tab === "sent" && sent.map((req) => {
           const mentor = req.profiles as { full_name: string; avatar_url: string | null; profession: string | null } | null
           return (
-            <Card key={req.id as string}><CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="size-8"><AvatarImage src={mentor?.avatar_url || ""} /><AvatarFallback className="text-xs">{mentor ? getInitials(mentor.full_name) : "?"}</AvatarFallback></Avatar>
-                <div><p className="font-medium text-sm">{mentor?.full_name}</p><p className="text-xs text-muted-foreground">{req.area as string} &middot; {formatDate(req.created_at as string)}</p></div>
+            <Card key={req.id as string}><CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="size-8 shrink-0"><AvatarImage src={mentor?.avatar_url || ""} /><AvatarFallback className="text-xs">{mentor ? getInitials(mentor.full_name) : "?"}</AvatarFallback></Avatar>
+                <div className="min-w-0"><p className="font-medium text-sm truncate">{mentor?.full_name}</p><p className="text-xs text-muted-foreground truncate">{req.area as string} &middot; {formatDate(req.created_at as string)}</p></div>
               </div>
-              <Badge className={STATUS_COLORS[req.status as string] || ""}>{req.status as string}</Badge>
+              <Badge className={`shrink-0 ${STATUS_COLORS[req.status as string] || ""}`}>{req.status as string}</Badge>
             </CardContent></Card>
           )
         })}
@@ -108,13 +108,13 @@ export default function MyRequestsPage() {
         {tab === "received" && received.map((req) => {
           const mentee = req.profiles as { full_name: string; avatar_url: string | null } | null
           return (
-            <Card key={req.id as string}><CardContent className="p-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Avatar className="size-8"><AvatarImage src={mentee?.avatar_url || ""} /><AvatarFallback className="text-xs">{mentee ? getInitials(mentee.full_name) : "?"}</AvatarFallback></Avatar>
-                <div><p className="font-medium text-sm">{mentee?.full_name}</p><p className="text-xs text-muted-foreground">{req.area as string} &middot; {formatDate(req.created_at as string)}</p>{req.message ? <p className="text-xs text-muted-foreground mt-1">&ldquo;{req.message as string}&rdquo;</p> : null}</div>
+            <Card key={req.id as string}><CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3 min-w-0">
+                <Avatar className="size-8 shrink-0"><AvatarImage src={mentee?.avatar_url || ""} /><AvatarFallback className="text-xs">{mentee ? getInitials(mentee.full_name) : "?"}</AvatarFallback></Avatar>
+                <div className="min-w-0"><p className="font-medium text-sm truncate">{mentee?.full_name}</p><p className="text-xs text-muted-foreground truncate">{req.area as string} &middot; {formatDate(req.created_at as string)}</p>{req.message ? <p className="text-xs text-muted-foreground mt-1">&ldquo;{req.message as string}&rdquo;</p> : null}</div>
               </div>
-              <div className="flex items-center gap-2">
-                <Badge className={STATUS_COLORS[req.status as string] || ""}>{req.status as string}</Badge>
+              <div className="flex items-center gap-2 shrink-0">
+                <Badge className={`shrink-0 ${STATUS_COLORS[req.status as string] || ""}`}>{req.status as string}</Badge>
                 {req.status === "pending" && (
                   <>
                     <Button size="sm" onClick={() => handleStatusUpdate(req.id as string, "accepted")} disabled={isPending}><Check className="size-3" /></Button>

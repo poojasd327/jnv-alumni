@@ -42,9 +42,9 @@ export function CommentSection({ postId, comments }: { postId: string; comments:
     <div className="space-y-4">
       <h2 className="text-lg font-semibold">Comments</h2>
 
-      <form onSubmit={handleSubmit} className="flex gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 sm:flex-row">
         <Textarea name="content" placeholder="Write a comment..." rows={2} className="flex-1" maxLength={10000} required />
-        <Button type="submit" disabled={isPending} className="self-end">{isPending ? "..." : "Post"}</Button>
+        <Button type="submit" disabled={isPending} className="self-end sm:self-end">{isPending ? "..." : "Post"}</Button>
       </form>
 
       <div className="space-y-3">

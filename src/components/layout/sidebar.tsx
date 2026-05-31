@@ -22,6 +22,7 @@ import {
   Building2,
   ImageIcon,
   HandHelping,
+  LayoutDashboard,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -52,6 +53,7 @@ const iconMap: Record<string, React.ElementType> = {
   Building2,
   ImageIcon,
   HandHelping,
+  LayoutDashboard,
 }
 
 export interface SidebarProps {
@@ -84,7 +86,7 @@ export function Sidebar({ profile }: SidebarProps) {
       <Separator />
 
       {/* Main Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-4">
         <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
           Main
         </p>

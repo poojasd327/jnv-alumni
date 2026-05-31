@@ -37,9 +37,9 @@ export default async function ProfilePage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold tracking-tight">My Profile</h1>
-        <Button variant="outline" render={<Link href="/profile/edit" />}>
+        <Button className="w-full sm:w-auto" variant="outline" render={<Link href="/profile/edit" />}>
             <Pencil className="size-4 mr-2" />
             Edit Profile
         </Button>

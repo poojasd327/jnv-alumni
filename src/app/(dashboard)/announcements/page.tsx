@@ -22,20 +22,20 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Announcements</h1>
           <p className="text-sm text-muted-foreground mt-1">Stay updated with the community</p>
         </div>
-        <Button render={<Link href="/announcements/new" />}><Plus className="size-4 mr-1" />New Announcement</Button>
+        <Button className="w-full sm:w-auto" render={<Link href="/announcements/new" />}><Plus className="size-4 mr-1" />New Announcement</Button>
       </div>
 
-      <form className="flex gap-2">
+      <form className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" /><Input name="q" placeholder="Search..." defaultValue={params.q} className="pl-9" /></div>
         <Button type="submit" variant="outline">Search</Button>
       </form>
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         <Button variant={!params.type ? "default" : "outline"} size="sm" render={<Link href="/announcements" />}>All</Button>
         {["general", "achievement", "opportunity", "update"].map((t) => (
           <Button key={t} variant={params.type === t ? "default" : "outline"} size="sm" render={<Link href={`/announcements?type=${t}`} />}>
@@ -45,7 +45,7 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
       </div>
 
       {announcements.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <Megaphone className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No announcements</h3>
         </div>
@@ -56,7 +56,7 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
               const author = a.profiles as { full_name: string; avatar_url: string | null } | null
               return (
                 <Link key={a.id as string} href={`/announcements/${a.id}`}>
-                  <Card className="transition-shadow hover:shadow-md">
+                  <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
                     <CardContent className="p-4">
                       <div className="flex items-start gap-3">
                         {a.is_pinned ? <Pin className="size-4 text-amber-500 shrink-0 mt-1" /> : null}

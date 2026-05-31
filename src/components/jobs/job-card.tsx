@@ -32,7 +32,7 @@ interface JobCardProps {
 export function JobCard({ job }: JobCardProps) {
   return (
     <Link href={`/jobs/${job.id}`}>
-      <Card className="transition-shadow hover:shadow-md">
+      <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">

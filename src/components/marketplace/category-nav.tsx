@@ -40,7 +40,7 @@ export function CategoryNav({ categories }: CategoryNavProps) {
   }
 
   return (
-    <div className="flex items-center gap-2 overflow-x-auto pb-2">
+    <div className="flex flex-wrap items-center gap-2">
       <Button
         variant={!activeCategory ? "default" : "outline"}
         size="sm"
@@ -56,7 +56,6 @@ export function CategoryNav({ categories }: CategoryNavProps) {
             variant={activeCategory === cat.id ? "default" : "outline"}
             size="sm"
             onClick={() => selectCategory(cat.id)}
-            className={cn("shrink-0")}
           >
             {Icon && <Icon className="h-4 w-4 mr-1.5" />}
             {cat.name}

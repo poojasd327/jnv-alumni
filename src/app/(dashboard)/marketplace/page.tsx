@@ -35,14 +35,14 @@ export default async function MarketplacePage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Marketplace</h1>
           <p className="text-muted-foreground text-sm mt-1">
             Buy and sell within the JNV community
           </p>
         </div>
-        <Button render={<Link href="/marketplace/new" />}>
+        <Button className="w-full sm:w-auto" render={<Link href="/marketplace/new" />}>
             <Plus className="h-4 w-4 mr-2" />
             Sell Item
         </Button>
@@ -78,7 +78,7 @@ export default async function MarketplacePage({
           )}
         </>
       ) : (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <ShoppingBag className="h-12 w-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No listings found</h3>
           <p className="text-muted-foreground mt-1">

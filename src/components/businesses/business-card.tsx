@@ -20,7 +20,7 @@ interface BusinessCardProps {
 export function BusinessCard({ business }: BusinessCardProps) {
   return (
     <Link href={`/businesses/${business.id}`}>
-      <Card className="transition-shadow hover:shadow-md">
+      <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-semibold">{business.name}</h3>

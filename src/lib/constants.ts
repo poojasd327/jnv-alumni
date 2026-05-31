@@ -64,6 +64,7 @@ export const MARKETPLACE_CATEGORIES = [
 ] as const
 
 export const NAV_ITEMS = [
+  { label: "Dashboard", href: "/", icon: "LayoutDashboard" },
   { label: "Directory", href: "/directory", icon: "Users" },
   { label: "Marketplace", href: "/marketplace", icon: "ShoppingBag" },
   { label: "Jobs", href: "/jobs", icon: "Briefcase" },

@@ -40,16 +40,16 @@ export default function MyJobsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">My Job Posts</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage your job postings</p>
         </div>
-        <Button render={<Link href="/jobs/new" />}><Plus className="size-4 mr-1" />Post Job</Button>
+        <Button className="w-full sm:w-auto" render={<Link href="/jobs/new" />}><Plus className="size-4 mr-1" />Post Job</Button>
       </div>
 
       {jobs.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <Briefcase className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No jobs posted yet</h3>
           <Button className="mt-4" render={<Link href="/jobs/new" />}>Post Your First Job</Button>
@@ -58,8 +58,8 @@ export default function MyJobsPage() {
         <div className="space-y-3">
           {jobs.map((job) => (
             <Card key={job.id as string}>
-              <CardContent className="p-4 flex items-center justify-between">
-                <div>
+              <CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
                   <Link href={`/jobs/${job.id}`} className="font-medium hover:underline">{job.title as string}</Link>
                   <p className="text-sm text-muted-foreground">{job.company as string} &middot; {formatDate(job.created_at as string)}</p>
                 </div>

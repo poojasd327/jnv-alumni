@@ -47,12 +47,12 @@ export default function MyListingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">My Listings</h1>
           <p className="text-muted-foreground text-sm mt-1">Manage your marketplace listings</p>
         </div>
-        <Button render={<Link href="/marketplace/new" />}>
+        <Button className="w-full sm:w-auto" render={<Link href="/marketplace/new" />}>
             <Plus className="h-4 w-4 mr-2" />
             New Listing
         </Button>
@@ -68,7 +68,7 @@ export default function MyListingsPage() {
       </Tabs>
 
       {listings.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <Package className="h-12 w-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No listings yet</h3>
           <p className="text-muted-foreground mt-1">Start selling to the JNV community</p>
@@ -79,8 +79,8 @@ export default function MyListingsPage() {
           {listings.map((listing) => (
             <Card key={listing.id}>
               <CardContent className="p-4">
-                <div className="flex gap-4">
-                  <div className="relative w-24 h-24 rounded-md overflow-hidden border shrink-0 bg-muted">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="relative w-full h-40 sm:w-24 sm:h-24 rounded-md overflow-hidden border shrink-0 bg-muted">
                     {listing.images.length > 0 ? (
                       <Image
                         src={listing.images[0]}
@@ -108,7 +108,7 @@ export default function MyListingsPage() {
                     <p className="text-xs text-muted-foreground mt-1">
                       Posted {formatDate(listing.created_at)} &middot; {listing.view_count} views
                     </p>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex flex-wrap items-center gap-2 mt-3">
                       <Button variant="outline" size="sm" render={<Link href={`/marketplace/${listing.id}/edit`} />}>
                           <Pencil className="h-3 w-3 mr-1" />
                           Edit

@@ -24,7 +24,7 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   return (
     <Link href={`/forum/${post.id}`}>
-      <Card className="transition-shadow hover:shadow-md">
+      <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             {post.profiles && (

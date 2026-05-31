@@ -28,10 +28,10 @@ interface EventCardProps {
 export function EventCard({ event }: EventCardProps) {
   return (
     <Link href={`/events/${event.id}`}>
-      <Card className="transition-shadow hover:shadow-md">
+      <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <CardContent className="p-4">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-semibold">{event.title}</h3>
+          <div className="flex items-start justify-between gap-2 min-w-0">
+            <h3 className="font-semibold line-clamp-2 min-w-0">{event.title}</h3>
             <Badge className={STATUS_COLORS[event.status] || ""}>
               {event.status}
             </Badge>

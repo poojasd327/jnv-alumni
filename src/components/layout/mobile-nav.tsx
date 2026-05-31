@@ -23,6 +23,7 @@ import {
   Building2,
   ImageIcon,
   HandHelping,
+  LayoutDashboard,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -52,6 +53,7 @@ const iconMap: Record<string, React.ElementType> = {
   Building2,
   ImageIcon,
   HandHelping,
+  LayoutDashboard,
 }
 
 interface MobileNavProps {

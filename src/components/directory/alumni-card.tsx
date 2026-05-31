@@ -15,7 +15,7 @@ export function AlumniCard({ alumni }: AlumniCardProps) {
 
   return (
     <Link href={`/directory/${alumni.id}`} className="block">
-      <Card className="h-full transition-shadow hover:shadow-md">
+      <Card className="h-full transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
         <CardContent className="flex flex-col items-center gap-3 pt-6 text-center">
           <Avatar className="size-16" size="lg">
             {alumni.avatar_url ? (
@@ -26,20 +26,20 @@ export function AlumniCard({ alumni }: AlumniCardProps) {
             </AvatarFallback>
           </Avatar>
 
-          <div className="space-y-1">
-            <h3 className="font-semibold leading-snug">{alumni.full_name}</h3>
+          <div className="space-y-1 min-w-0 w-full">
+            <h3 className="font-semibold leading-snug truncate">{alumni.full_name}</h3>
 
             <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-              <GraduationCap className="size-3" />
-              <span>
+              <GraduationCap className="size-3 shrink-0" />
+              <span className="truncate">
                 {alumni.jnv_school} | {alumni.passing_year}
               </span>
             </div>
 
             {(alumni.profession || alumni.company) && (
               <div className="flex items-center justify-center gap-1 text-xs text-muted-foreground">
-                <Briefcase className="size-3" />
-                <span>
+                <Briefcase className="size-3 shrink-0" />
+                <span className="truncate">
                   {alumni.profession}
                   {alumni.company && ` @ ${alumni.company}`}
                 </span>

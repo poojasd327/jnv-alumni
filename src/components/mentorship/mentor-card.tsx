@@ -22,7 +22,7 @@ interface MentorCardProps {
 
 export function MentorCard({ mentor }: MentorCardProps) {
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
       <CardContent className="p-4">
         <div className="flex items-start gap-3">
           <Avatar className="size-12">

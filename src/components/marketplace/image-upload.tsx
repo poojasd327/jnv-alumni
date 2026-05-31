@@ -79,9 +79,9 @@ export function ImageUpload({ images, onChange, maxImages = 5, userId, listingId
             <button
               type="button"
               onClick={() => removeImage(i)}
-              className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 hover:bg-black/80"
+              className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-2 hover:bg-black/80"
             >
-              <X className="h-3 w-3" />
+              <X className="h-4 w-4" />
             </button>
           </div>
         ))}

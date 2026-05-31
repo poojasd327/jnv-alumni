@@ -34,7 +34,7 @@ const conditionLabels: Record<string, string> = {
 
 export function ListingCard({ listing, isWishlisted = false }: ListingCardProps) {
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow group">
+    <Card className="overflow-hidden transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group">
       <Link href={`/marketplace/${listing.id}`}>
         <div className="relative aspect-[4/3] bg-muted">
           {listing.images.length > 0 ? (

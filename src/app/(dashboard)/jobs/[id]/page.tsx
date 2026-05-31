@@ -47,12 +47,12 @@ export default async function JobDetailPage({
       </Button>
 
       <div>
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-2xl font-bold">{job.title}</h1>
             <p className="text-lg text-muted-foreground">{job.company}</p>
           </div>
-          <Badge variant="outline" className="text-sm">{JOB_TYPE_LABELS[job.job_type] || job.job_type}</Badge>
+          <Badge variant="outline" className="text-sm shrink-0">{JOB_TYPE_LABELS[job.job_type] || job.job_type}</Badge>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -141,18 +141,18 @@ export default async function JobDetailPage({
               const applicant = app.profiles as { id: string; full_name: string; avatar_url: string | null; profession: string | null } | null
               return (
                 <Card key={app.id as string}>
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="size-8">
+                  <CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Avatar className="size-8 shrink-0">
                         {applicant?.avatar_url && <AvatarImage src={applicant.avatar_url} />}
                         <AvatarFallback className="text-xs">{applicant ? getInitials(applicant.full_name) : "?"}</AvatarFallback>
                       </Avatar>
-                      <div>
-                        <p className="font-medium text-sm">{applicant?.full_name}</p>
-                        <p className="text-xs text-muted-foreground">{applicant?.profession} &middot; {formatDate(app.created_at as string)}</p>
+                      <div className="min-w-0">
+                        <p className="font-medium text-sm truncate">{applicant?.full_name}</p>
+                        <p className="text-xs text-muted-foreground truncate">{applicant?.profession} &middot; {formatDate(app.created_at as string)}</p>
                       </div>
                     </div>
-                    <Badge className={APP_STATUS_COLORS[app.status as string] || ""}>{(app.status as string).replace("_", " ")}</Badge>
+                    <Badge className={`shrink-0 ${APP_STATUS_COLORS[app.status as string] || ""}`}>{(app.status as string).replace("_", " ")}</Badge>
                   </CardContent>
                 </Card>
               )
