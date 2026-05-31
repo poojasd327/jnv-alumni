@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { changePassword, deleteAccount } from "@/lib/actions/settings.actions"
 import { toast } from "sonner"
-import { Lock, Trash2, User, Shield, AlertTriangle } from "lucide-react"
+import { Lock, Trash2, User, Shield, AlertTriangle, Download } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
 interface SettingsFormProps {
@@ -28,6 +28,7 @@ export function SettingsForm({ profile, email }: SettingsFormProps) {
     <div className="space-y-6">
       <AccountInfoSection profile={profile} email={email} />
       <ChangePasswordSection />
+      <DataPrivacySection />
       <DangerZoneSection />
     </div>
   )
@@ -163,6 +164,63 @@ function ChangePasswordSection() {
             {loading ? "Updating..." : "Update Password"}
           </Button>
         </form>
+      </CardContent>
+    </Card>
+  )
+}
+
+function DataPrivacySection() {
+  const [downloading, setDownloading] = useState(false)
+
+  async function handleExport() {
+    setDownloading(true)
+    try {
+      const response = await fetch("/api/export")
+      if (!response.ok) throw new Error("Export failed")
+
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement("a")
+      a.href = url
+      a.download = `jnv-alumni-data-${new Date().toISOString().split("T")[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      toast.success("Your data has been downloaded")
+    } catch {
+      toast.error("Failed to export data. Please try again.")
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Download className="size-4" /> Data & Privacy
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-medium">Export Your Data</p>
+            <p className="text-xs text-muted-foreground">
+              Download all your data including profile, posts, listings, and activity as a JSON file.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="shrink-0"
+            onClick={handleExport}
+            disabled={downloading}
+          >
+            <Download className="size-4 mr-1" />
+            {downloading ? "Exporting..." : "Download Data"}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   )

@@ -14,6 +14,7 @@ import {
   Plus,
   MessageSquare,
   UserCircle,
+  Megaphone,
 } from "lucide-react"
 import type { Profile } from "@/lib/types/database.types"
 
@@ -86,7 +87,7 @@ export default async function DashboardHome() {
   ])
 
   // Fetch recent items
-  const [{ data: recentEvents }, { data: recentJobs }] = await Promise.all([
+  const [{ data: recentEvents }, { data: recentJobs }, { data: recentPosts }, { data: recentAnnouncements }] = await Promise.all([
     supabase
       .from("events")
       .select("id, title, event_date, location_city")
@@ -97,6 +98,16 @@ export default async function DashboardHome() {
       .from("jobs")
       .select("id, title, company, created_at")
       .eq("status", "open")
+      .order("created_at", { ascending: false })
+      .limit(3),
+    supabase
+      .from("forum_posts")
+      .select("id, title, comments_count, created_at")
+      .order("created_at", { ascending: false })
+      .limit(3),
+    supabase
+      .from("announcements")
+      .select("id, title, type, created_at")
       .order("created_at", { ascending: false })
       .limit(3),
   ])
@@ -335,6 +346,113 @@ export default async function DashboardHome() {
               ) : (
                 <p className="p-4 text-sm text-muted-foreground text-center">
                   No open positions
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Forum & Announcements */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Recent Forum Posts */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold">Recent Discussions</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs"
+              render={<Link href="/forum" />}
+            >
+              View all
+              <ArrowRight className="size-3 ml-1" />
+            </Button>
+          </div>
+          <Card>
+            <CardContent className="p-0 divide-y">
+              {recentPosts && recentPosts.length > 0 ? (
+                recentPosts.map(
+                  (post: {
+                    id: string
+                    title: string
+                    comments_count: number
+                    created_at: string
+                  }) => (
+                    <Link
+                      key={post.id}
+                      href={`/forum/${post.id}`}
+                      className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <MessageSquare className="size-4 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">
+                          {post.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {post.comments_count} comments &middot; {formatDate(post.created_at)}
+                        </p>
+                      </div>
+                    </Link>
+                  )
+                )
+              ) : (
+                <p className="p-4 text-sm text-muted-foreground text-center">
+                  No discussions yet
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Announcements */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold">Announcements</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs"
+              render={<Link href="/announcements" />}
+            >
+              View all
+              <ArrowRight className="size-3 ml-1" />
+            </Button>
+          </div>
+          <Card>
+            <CardContent className="p-0 divide-y">
+              {recentAnnouncements && recentAnnouncements.length > 0 ? (
+                recentAnnouncements.map(
+                  (item: {
+                    id: string
+                    title: string
+                    type: string
+                    created_at: string
+                  }) => (
+                    <Link
+                      key={item.id}
+                      href={`/announcements/${item.id}`}
+                      className="flex items-center gap-3 p-3 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                        <Megaphone className="size-4 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium truncate">
+                          {item.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.type} &middot; {formatDate(item.created_at)}
+                        </p>
+                      </div>
+                    </Link>
+                  )
+                )
+              ) : (
+                <p className="p-4 text-sm text-muted-foreground text-center">
+                  No announcements yet
                 </p>
               )}
             </CardContent>
