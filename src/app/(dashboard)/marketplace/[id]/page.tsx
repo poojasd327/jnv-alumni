@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { createClient } from "@/lib/supabase/server"
 import { getWishlistedIds } from "@/lib/actions/wishlist.actions"
 import { notFound } from "next/navigation"
@@ -12,9 +13,34 @@ import { ContactSeller } from "@/components/marketplace/contact-seller"
 import { PriceDisplay } from "@/components/marketplace/price-display"
 import { ListingStatusBadge } from "@/components/marketplace/listing-status-badge"
 import { MarkAsSoldButton } from "@/components/marketplace/mark-as-sold-button"
+import { ShareButton } from "@/components/ui/share-button"
+import { ReportButton } from "@/components/ui/report-button"
 import { formatDate, getInitials } from "@/lib/utils"
 import { ArrowLeft, MapPin, Calendar, Eye, Pencil, ImageIcon } from "lucide-react"
 import type { MarketplaceListing } from "@/lib/types/database.types"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("marketplace_listings")
+    .select("title, description, price, location_city, location_state, images")
+    .eq("id", id)
+    .single()
+  if (!data) return { title: "Listing Not Found" }
+  const location = [data.location_city, data.location_state].filter(Boolean).join(", ")
+  const priceStr = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(data.price)
+  return {
+    title: data.title,
+    description: `${data.title} — ${priceStr}${location ? ` in ${location}` : ""}. ${data.description?.slice(0, 120)}`,
+    openGraph: {
+      title: `${data.title} — ${priceStr} | JNV Alumni Network`,
+      description: data.description?.slice(0, 200),
+      type: "article",
+      ...(data.images?.[0] ? { images: [data.images[0]] } : {}),
+    },
+  }
+}
 
 const conditionLabels: Record<string, string> = {
   new: "Brand New",
@@ -63,10 +89,13 @@ export default async function ListingDetailPage({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Button variant="ghost" size="sm" render={<Link href="/marketplace" />}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Marketplace
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" render={<Link href="/marketplace" />}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Marketplace
+        </Button>
+        <ShareButton title={listing.title} text={`Check out: ${listing.title} on JNV Alumni Marketplace`} />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Images */}
@@ -142,6 +171,10 @@ export default async function ListingDetailPage({
             <div>
               <h2 className="font-semibold mb-2">Description</h2>
               <p className="text-muted-foreground whitespace-pre-wrap">{listing.description}</p>
+            </div>
+
+            <div className="flex justify-end">
+              <ReportButton contentType="marketplace_listing" contentId={id} />
             </div>
           </div>
         </div>

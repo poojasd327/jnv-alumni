@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, ShoppingBag } from "lucide-react"
 import Link from "next/link"
 
-export const metadata = { title: "Marketplace" }
+export const metadata = { title: "Marketplace", description: "Buy and sell items within the trusted JNV alumni community." }
 
 export default async function MarketplacePage({
   searchParams,

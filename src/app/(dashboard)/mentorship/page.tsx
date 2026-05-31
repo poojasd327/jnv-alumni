@@ -1,3 +1,5 @@
+export const metadata = { title: "Mentorship", description: "Find mentors and offer guidance within the JNV alumni community." }
+
 import { getMentors } from "@/lib/actions/mentorship.actions"
 import { MENTORSHIP_AREAS } from "@/lib/constants"
 import { MentorCard } from "@/components/mentorship/mentor-card"

@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
   // Public routes that don't require auth
-  const publicRoutes = ["/login", "/register", "/forgot-password", "/api/auth/callback"]
+  const publicRoutes = ["/login", "/register", "/forgot-password", "/api/auth/callback", "/privacy", "/terms"]
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
 
   // Pending approval route

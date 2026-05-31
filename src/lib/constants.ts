@@ -80,11 +80,13 @@ export const PERSONAL_NAV_ITEMS = [
   { label: "My Listings", href: "/marketplace/my-listings", icon: "Package" },
   { label: "Wishlist", href: "/wishlist", icon: "Heart" },
   { label: "Profile", href: "/profile", icon: "User" },
+  { label: "Settings", href: "/settings", icon: "Settings" },
 ] as const
 
 export const ADMIN_NAV_ITEMS = [
   { label: "Approvals", href: "/admin", icon: "UserCheck" },
   { label: "All Users", href: "/admin/users", icon: "UsersRound" },
+  { label: "Reports", href: "/admin/reports", icon: "Flag" },
 ] as const
 
 export const LISTING_CONDITIONS = [

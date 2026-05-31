@@ -1,3 +1,5 @@
+export const metadata = { title: "Alumni Directory", description: "Search and connect with JNV alumni across India." }
+
 import Link from "next/link"
 import { ChevronLeft, ChevronRight, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"

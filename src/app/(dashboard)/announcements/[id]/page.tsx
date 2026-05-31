@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { getAnnouncementById } from "@/lib/actions/announcements.actions"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -11,6 +12,21 @@ import Link from "next/link"
 const TYPE_COLORS: Record<string, string> = {
   general: "bg-gray-100 text-gray-700", achievement: "bg-amber-100 text-amber-700",
   opportunity: "bg-blue-100 text-blue-700", update: "bg-green-100 text-green-700",
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const announcement = await getAnnouncementById(id)
+  if (!announcement) return { title: "Announcement Not Found" }
+  return {
+    title: announcement.title,
+    description: announcement.content?.slice(0, 160),
+    openGraph: {
+      title: `${announcement.title} | JNV Alumni Network`,
+      description: announcement.content?.slice(0, 200),
+      type: "article",
+    },
+  }
 }
 
 export default async function AnnouncementDetailPage({ params }: { params: Promise<{ id: string }> }) {

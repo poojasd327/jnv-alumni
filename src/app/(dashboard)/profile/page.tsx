@@ -1,3 +1,5 @@
+export const metadata = { title: "Profile" }
+
 import Link from "next/link"
 import {
   MapPin,

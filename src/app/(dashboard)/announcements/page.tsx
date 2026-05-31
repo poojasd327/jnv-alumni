@@ -1,3 +1,5 @@
+export const metadata = { title: "Announcements", description: "Latest announcements from the JNV alumni network." }
+
 import { getAnnouncements } from "@/lib/actions/announcements.actions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"

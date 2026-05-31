@@ -1,3 +1,5 @@
+export const metadata = { title: "Events", description: "Discover and register for JNV alumni events and reunions." }
+
 import { getEvents } from "@/lib/actions/events.actions"
 import { EventCard } from "@/components/events/event-card"
 import { Button } from "@/components/ui/button"

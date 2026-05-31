@@ -17,6 +17,10 @@ export type ApplicationStatus = "applied" | "under_review" | "interview" | "sele
 export type EventStatus = "upcoming" | "ongoing" | "completed" | "cancelled"
 export type AnnouncementType = "general" | "achievement" | "opportunity" | "update"
 export type MentorshipStatus = "pending" | "accepted" | "active" | "completed" | "declined"
+export type NotificationType = "mention" | "reply" | "like" | "follow" | "event_reminder" | "job_match" | "approval" | "announcement" | "mentorship" | "system"
+export type ReportContentType = "forum_post" | "forum_comment" | "marketplace_listing" | "job" | "event" | "business" | "media" | "profile"
+export type ReportReason = "spam" | "harassment" | "inappropriate" | "misinformation" | "fraud" | "other"
+export type ReportStatus = "pending" | "reviewed" | "action_taken" | "dismissed"
 
 export interface Database {
   public: {
@@ -895,6 +899,95 @@ export interface Database {
           },
         ]
       }
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: NotificationType
+          title: string
+          message: string
+          link: string | null
+          is_read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: NotificationType
+          title: string
+          message: string
+          link?: string | null
+          is_read?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          type?: NotificationType
+          title?: string
+          message?: string
+          link?: string | null
+          is_read?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reports: {
+        Row: {
+          id: string
+          reporter_id: string
+          content_type: ReportContentType
+          content_id: string
+          reason: ReportReason
+          description: string | null
+          status: ReportStatus
+          reviewed_by: string | null
+          reviewed_at: string | null
+          admin_notes: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          reporter_id: string
+          content_type: ReportContentType
+          content_id: string
+          reason: ReportReason
+          description?: string | null
+          status?: ReportStatus
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          admin_notes?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          reporter_id?: string
+          content_type?: ReportContentType
+          content_id?: string
+          reason?: ReportReason
+          description?: string | null
+          status?: ReportStatus
+          reviewed_by?: string | null
+          reviewed_at?: string | null
+          admin_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -913,6 +1006,10 @@ export interface Database {
       event_status: EventStatus
       announcement_type: AnnouncementType
       mentorship_status: MentorshipStatus
+      notification_type: NotificationType
+      report_content_type: ReportContentType
+      report_reason: ReportReason
+      report_status: ReportStatus
     }
   }
 }
@@ -943,3 +1040,5 @@ export type ForumPost = Database["public"]["Tables"]["forum_posts"]["Row"]
 export type ForumComment = Database["public"]["Tables"]["forum_comments"]["Row"]
 export type Media = Database["public"]["Tables"]["media"]["Row"]
 export type MentorshipRequest = Database["public"]["Tables"]["mentorship_requests"]["Row"]
+export type Notification = Database["public"]["Tables"]["notifications"]["Row"]
+export type Report = Database["public"]["Tables"]["reports"]["Row"]

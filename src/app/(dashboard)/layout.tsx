@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Topbar } from "@/components/layout/topbar"
+import { getUnreadCount } from "@/lib/actions/notifications.actions"
 import type { Profile } from "@/lib/types/database.types"
 
 export default async function DashboardLayout({
@@ -37,6 +38,8 @@ export default async function DashboardLayout({
     email: profile.email,
   }
 
+  const unreadCount = await getUnreadCount()
+
   return (
     <div className="flex h-screen">
       {/* Desktop Sidebar */}
@@ -46,7 +49,7 @@ export default async function DashboardLayout({
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar profile={sidebarProfile} />
+        <Topbar profile={sidebarProfile} unreadNotifications={unreadCount} />
         <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6">
           {children}
         </main>

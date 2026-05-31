@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { getEventById, isRegistered } from "@/lib/actions/events.actions"
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
@@ -8,7 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, Calendar, MapPin, Globe, Users } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Link from "next/link"
+import { ShareButton } from "@/components/ui/share-button"
+import { ReportButton } from "@/components/ui/report-button"
 import { EventActions } from "./event-actions"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const event = await getEventById(id)
+  if (!event) return { title: "Event Not Found" }
+  const location = event.is_online ? "Online" : [event.venue, event.location_city].filter(Boolean).join(", ")
+  return {
+    title: event.title,
+    description: `${event.title}${location ? ` — ${location}` : ""}. ${event.description?.slice(0, 150)}`,
+    openGraph: {
+      title: `${event.title} | JNV Alumni Network`,
+      description: event.description?.slice(0, 200),
+      type: "article",
+    },
+  }
+}
 
 const STATUS_COLORS: Record<string, string> = {
   upcoming: "bg-blue-100 text-blue-700", ongoing: "bg-green-100 text-green-700",
@@ -29,7 +48,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Button variant="ghost" size="sm" render={<Link href="/events" />}><ArrowLeft className="size-4 mr-1" /> Back to Events</Button>
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" render={<Link href="/events" />}><ArrowLeft className="size-4 mr-1" /> Back to Events</Button>
+        <ShareButton title={event.title} text={`Check out this event: ${event.title} on JNV Alumni Network`} />
+      </div>
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <h1 className="text-2xl font-bold">{event.title}</h1>
@@ -70,6 +92,10 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       {!isOwner && event.status === "upcoming" && (
         <EventActions eventId={id} isRegistered={registered} />
       )}
+
+      <div className="flex justify-end">
+        <ReportButton contentType="event" contentId={id} />
+      </div>
     </div>
   )
 }

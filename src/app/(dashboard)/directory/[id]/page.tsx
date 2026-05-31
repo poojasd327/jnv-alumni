@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
@@ -18,6 +19,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
 import { getInitials, formatDate } from "@/lib/utils"
 import type { Profile } from "@/lib/types/database.types"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("profiles")
+    .select("full_name, profession, company, jnv_school, batch_start_year, passing_year")
+    .eq("id", id)
+    .eq("approval_status", "approved")
+    .single()
+  if (!data) return { title: "Alumni Not Found" }
+  const desc = `${data.full_name}${data.profession ? ` — ${data.profession}` : ""}${data.company ? ` at ${data.company}` : ""}. ${data.jnv_school}, Batch ${data.batch_start_year}–${data.passing_year}.`
+  return {
+    title: data.full_name,
+    description: desc,
+    openGraph: {
+      title: `${data.full_name} | JNV Alumni Network`,
+      description: desc,
+      type: "profile",
+    },
+  }
+}
 
 export default async function AlumniDetailPage({
   params,

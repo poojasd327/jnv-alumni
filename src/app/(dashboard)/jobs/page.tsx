@@ -1,3 +1,5 @@
+export const metadata = { title: "Jobs Board", description: "Browse and post job opportunities within the JNV alumni network." }
+
 import { getJobs } from "@/lib/actions/jobs.actions"
 import { JobCard } from "@/components/jobs/job-card"
 import { Button } from "@/components/ui/button"

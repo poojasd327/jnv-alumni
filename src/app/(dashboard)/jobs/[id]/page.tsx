@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { getJobById, checkIfApplied, getJobApplications } from "@/lib/actions/jobs.actions"
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
@@ -8,7 +9,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, MapPin, Briefcase, IndianRupee, UserCheck, ExternalLink } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Link from "next/link"
+import { ShareButton } from "@/components/ui/share-button"
+import { ReportButton } from "@/components/ui/report-button"
 import { ApplyForm } from "./apply-form"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const job = await getJobById(id)
+  if (!job) return { title: "Job Not Found" }
+  const location = [job.location_city, job.location_state].filter(Boolean).join(", ")
+  return {
+    title: job.title,
+    description: `${job.title} at ${job.company}${location ? ` in ${location}` : ""}. ${job.description?.slice(0, 150)}`,
+    openGraph: {
+      title: `${job.title} at ${job.company} | JNV Alumni Network`,
+      description: job.description?.slice(0, 200),
+      type: "article",
+    },
+  }
+}
 
 const JOB_TYPE_LABELS: Record<string, string> = {
   full_time: "Full Time", part_time: "Part Time", contract: "Contract",
@@ -42,9 +61,12 @@ export default async function JobDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Button variant="ghost" size="sm" render={<Link href="/jobs" />}>
-        <ArrowLeft className="size-4 mr-1" /> Back to Jobs
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" render={<Link href="/jobs" />}>
+          <ArrowLeft className="size-4 mr-1" /> Back to Jobs
+        </Button>
+        <ShareButton title={`${job.title} at ${job.company}`} text={`Check out this job: ${job.title} at ${job.company} on JNV Alumni Network`} />
+      </div>
 
       <div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
@@ -161,7 +183,10 @@ export default async function JobDetailPage({
         </div>
       )}
 
-      <p className="text-xs text-muted-foreground">Posted {formatDate(job.created_at)}</p>
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-muted-foreground">Posted {formatDate(job.created_at)}</p>
+        <ReportButton contentType="job" contentId={id} />
+      </div>
     </div>
   )
 }

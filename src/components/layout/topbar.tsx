@@ -23,6 +23,8 @@ import {
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { PageTitle } from "@/components/layout/page-title"
+import { GlobalSearch } from "@/components/layout/global-search"
+import { NotificationBell } from "@/components/layout/notification-bell"
 import { logout } from "@/lib/actions/auth.actions"
 
 interface TopbarProps {
@@ -32,9 +34,10 @@ interface TopbarProps {
     role: string
     email: string
   }
+  unreadNotifications?: number
 }
 
-export function Topbar({ profile }: TopbarProps) {
+export function Topbar({ profile, unreadNotifications = 0 }: TopbarProps) {
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4">
       {/* Mobile Nav Trigger */}
@@ -53,6 +56,12 @@ export function Topbar({ profile }: TopbarProps) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Global Search */}
+      <GlobalSearch />
+
+      {/* Notifications */}
+      <NotificationBell initialCount={unreadNotifications} />
 
       {/* Dark Mode Toggle */}
       <ThemeToggle />

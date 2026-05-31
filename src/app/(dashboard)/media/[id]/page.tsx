@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { getMediaById } from "@/lib/actions/media.actions"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -8,6 +9,22 @@ import { ArrowLeft } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Image from "next/image"
 import Link from "next/link"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const media = await getMediaById(id)
+  if (!media) return { title: "Media Not Found" }
+  return {
+    title: media.title,
+    description: media.description?.slice(0, 160) || `${media.title} — JNV Alumni Media Gallery`,
+    openGraph: {
+      title: `${media.title} | JNV Alumni Media`,
+      description: media.description?.slice(0, 200) || media.title,
+      type: "article",
+      ...(media.file_type === "image" ? { images: [media.file_url] } : {}),
+    },
+  }
+}
 
 export default async function MediaDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

@@ -1,3 +1,5 @@
+export const metadata = { title: "Media Gallery", description: "Photos and videos from JNV schools, reunions, and events." }
+
 import { getMedia } from "@/lib/actions/media.actions"
 import { MEDIA_CATEGORIES } from "@/lib/constants"
 import { Button } from "@/components/ui/button"

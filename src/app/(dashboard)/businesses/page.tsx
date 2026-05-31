@@ -1,3 +1,5 @@
+export const metadata = { title: "Business Directory", description: "Discover businesses run by JNV alumni across India." }
+
 import { getBusinesses } from "@/lib/actions/businesses.actions"
 import { BUSINESS_CATEGORIES } from "@/lib/constants"
 import { BusinessCard } from "@/components/businesses/business-card"

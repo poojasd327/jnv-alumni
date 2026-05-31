@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import { getBusinessById } from "@/lib/actions/businesses.actions"
 import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -7,6 +8,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ArrowLeft, Globe, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
 import { getInitials } from "@/lib/utils"
 import Link from "next/link"
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const business = await getBusinessById(id)
+  if (!business) return { title: "Business Not Found" }
+  const location = [business.location_city, business.location_state].filter(Boolean).join(", ")
+  return {
+    title: business.name,
+    description: `${business.name}${business.category ? ` — ${business.category}` : ""}${location ? ` in ${location}` : ""}. ${business.description?.slice(0, 120)}`,
+    openGraph: {
+      title: `${business.name} | JNV Alumni Business Directory`,
+      description: business.description?.slice(0, 200),
+      type: "article",
+    },
+  }
+}
 
 export default async function BusinessDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

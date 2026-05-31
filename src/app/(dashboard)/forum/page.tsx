@@ -1,3 +1,5 @@
+export const metadata = { title: "Forum", description: "Discuss topics and connect with fellow JNV alumni." }
+
 import { getForumPosts, getForumCategories } from "@/lib/actions/forum.actions"
 import { PostCard } from "@/components/forum/post-card"
 import { Button } from "@/components/ui/button"
