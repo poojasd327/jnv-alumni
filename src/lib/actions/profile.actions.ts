@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import { sanitizeInput } from "@/lib/utils"
 import type { ProfileUpdate } from "@/lib/types/database.types"
 
 export async function getMyProfile() {
@@ -67,18 +68,18 @@ export async function updateProfile(data: ProfileUpdate) {
     return { data: null, error: "Not authenticated" }
   }
 
-  // Prevent updating sensitive fields
+  // Prevent updating sensitive fields and sanitize text inputs
   const safeData: ProfileUpdate = {
-    city: data.city,
-    state: data.state,
-    profession: data.profession,
-    company: data.company,
-    industry: data.industry,
+    city: data.city ? sanitizeInput(data.city, 100) : data.city,
+    state: data.state ? sanitizeInput(data.state, 100) : data.state,
+    profession: data.profession ? sanitizeInput(data.profession, 200) : data.profession,
+    company: data.company ? sanitizeInput(data.company, 200) : data.company,
+    industry: data.industry ? sanitizeInput(data.industry, 100) : data.industry,
     skills: data.skills,
-    linkedin_url: data.linkedin_url,
-    portfolio_url: data.portfolio_url,
-    whatsapp_number: data.whatsapp_number,
-    bio: data.bio,
+    linkedin_url: data.linkedin_url ? sanitizeInput(data.linkedin_url, 500) : data.linkedin_url,
+    portfolio_url: data.portfolio_url ? sanitizeInput(data.portfolio_url, 500) : data.portfolio_url,
+    whatsapp_number: data.whatsapp_number ? sanitizeInput(data.whatsapp_number, 20) : data.whatsapp_number,
+    bio: data.bio ? sanitizeInput(data.bio, 2000) : data.bio,
     updated_at: new Date().toISOString(),
   }
 

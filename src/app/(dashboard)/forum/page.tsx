@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { Plus, MessageSquare, Search } from "lucide-react"
+import { Pagination } from "@/components/shared/pagination"
 
 export default async function ForumPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams
@@ -47,13 +48,7 @@ export default async function ForumPage({ searchParams }: { searchParams: Promis
       ) : (
         <>
           <div className="space-y-3">{posts.map((p: Record<string, unknown>) => <PostCard key={p.id as string} post={p as never} />)}</div>
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2">
-              {currentPage > 1 && <Button variant="outline" size="sm" render={<Link href={`/forum?page=${currentPage - 1}${params.category ? `&category=${params.category}` : ""}`} />}>Previous</Button>}
-              <span className="flex items-center text-sm text-muted-foreground">Page {currentPage} of {totalPages}</span>
-              {currentPage < totalPages && <Button variant="outline" size="sm" render={<Link href={`/forum?page=${currentPage + 1}${params.category ? `&category=${params.category}` : ""}`} />}>Next</Button>}
-            </div>
-          )}
+          {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} />}
         </>
       )}
     </div>

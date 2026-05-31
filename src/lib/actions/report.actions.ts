@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import { sanitizeInput } from "@/lib/utils"
 
 const VALID_CONTENT_TYPES = [
   "forum_post", "forum_comment", "marketplace_listing", "job",
@@ -41,7 +42,7 @@ export async function submitReport(data: {
     content_type: data.contentType,
     content_id: data.contentId,
     reason: data.reason,
-    description: data.description || null,
+    description: data.description ? sanitizeInput(data.description, 1000) : null,
   })
 
   if (error) return { error: error.message }
@@ -109,7 +110,7 @@ export async function reviewReport(reportId: string, action: "dismissed" | "acti
       status: action,
       reviewed_by: adminId,
       reviewed_at: new Date().toISOString(),
-      admin_notes: adminNotes || null,
+      admin_notes: adminNotes ? sanitizeInput(adminNotes, 2000) : null,
     })
     .eq("id", reportId)
 

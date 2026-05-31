@@ -109,6 +109,7 @@ export function NotificationBell({ initialCount }: { initialCount: number }) {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger
+        aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : "Notifications"}
         className={cn(
           "relative flex items-center justify-center rounded-lg p-2",
           "transition-colors hover:bg-muted"

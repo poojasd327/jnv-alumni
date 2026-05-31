@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import { Plus, Calendar, Search } from "lucide-react"
+import { Pagination } from "@/components/shared/pagination"
 
 export default async function EventsPage({
   searchParams,
@@ -55,13 +56,7 @@ export default async function EventsPage({
               <EventCard key={event.id as string} event={event as never} />
             ))}
           </div>
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2">
-              {currentPage > 1 && <Button variant="outline" size="sm" render={<Link href={`/events?page=${currentPage - 1}&status=${params.status || ""}`} />}>Previous</Button>}
-              <span className="flex items-center text-sm text-muted-foreground">Page {currentPage} of {totalPages}</span>
-              {currentPage < totalPages && <Button variant="outline" size="sm" render={<Link href={`/events?page=${currentPage + 1}&status=${params.status || ""}`} />}>Next</Button>}
-            </div>
-          )}
+          {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} />}
         </>
       )}
     </div>

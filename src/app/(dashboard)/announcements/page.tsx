@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
 import { Plus, Megaphone, Pin, Search } from "lucide-react"
+import { Pagination } from "@/components/shared/pagination"
 import { formatDate, getInitials } from "@/lib/utils"
 
 const TYPE_COLORS: Record<string, string> = {
@@ -85,13 +86,7 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
               )
             })}
           </div>
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2">
-              {currentPage > 1 && <Button variant="outline" size="sm" render={<Link href={`/announcements?page=${currentPage - 1}`} />}>Previous</Button>}
-              <span className="flex items-center text-sm text-muted-foreground">Page {currentPage} of {totalPages}</span>
-              {currentPage < totalPages && <Button variant="outline" size="sm" render={<Link href={`/announcements?page=${currentPage + 1}`} />}>Next</Button>}
-            </div>
-          )}
+          {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} />}
         </>
       )}
     </div>

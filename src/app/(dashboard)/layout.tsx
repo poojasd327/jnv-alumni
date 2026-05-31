@@ -42,15 +42,23 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex h-screen">
+      {/* Skip to main content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground focus:outline-none"
+      >
+        Skip to main content
+      </a>
+
       {/* Desktop Sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col overflow-hidden border-r bg-card md:flex">
+      <aside className="hidden w-64 shrink-0 flex-col overflow-hidden border-r bg-card md:flex" aria-label="Main navigation">
         <Sidebar profile={sidebarProfile} />
       </aside>
 
       {/* Main Content Area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar profile={sidebarProfile} unreadNotifications={unreadCount} />
-        <main className="flex-1 overflow-y-auto bg-background p-4 md:p-6">
+        <main id="main-content" className="flex-1 overflow-y-auto bg-background p-4 md:p-6" role="main">
           {children}
         </main>
       </div>

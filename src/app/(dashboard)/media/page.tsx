@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import Link from "next/link"
 import Image from "next/image"
 import { Plus, ImageIcon, Search, Play } from "lucide-react"
+import { Pagination } from "@/components/shared/pagination"
 
 export default async function MediaPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const params = await searchParams
@@ -66,13 +67,7 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
               </Link>
             ))}
           </div>
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2">
-              {currentPage > 1 && <Button variant="outline" size="sm" render={<Link href={`/media?page=${currentPage - 1}`} />}>Previous</Button>}
-              <span className="flex items-center text-sm text-muted-foreground">Page {currentPage} of {totalPages}</span>
-              {currentPage < totalPages && <Button variant="outline" size="sm" render={<Link href={`/media?page=${currentPage + 1}`} />}>Next</Button>}
-            </div>
-          )}
+          {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} />}
         </>
       )}
     </div>

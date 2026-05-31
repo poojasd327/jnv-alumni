@@ -198,7 +198,7 @@ export async function applyToJob(jobId: string, data: { cover_note?: string; res
     .insert({
       job_id: jobId,
       applicant_id: user.id,
-      cover_note: data.cover_note || null,
+      cover_note: data.cover_note ? sanitizeInput(data.cover_note, 5000) : null,
       resume_url: data.resume_url || null,
     })
     .select()

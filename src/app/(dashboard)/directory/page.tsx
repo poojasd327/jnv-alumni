@@ -1,7 +1,8 @@
 export const metadata = { title: "Alumni Directory", description: "Search and connect with JNV alumni across India." }
 
 import Link from "next/link"
-import { ChevronLeft, ChevronRight, Users } from "lucide-react"
+import { Users } from "lucide-react"
+import { Pagination } from "@/components/shared/pagination"
 import { Button } from "@/components/ui/button"
 import { DirectorySearch } from "@/components/directory/directory-search"
 import { DirectoryFilters } from "@/components/directory/directory-filters"
@@ -77,45 +78,7 @@ export default async function DirectoryPage({
       <AlumniGrid alumni={alumni} />
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          {currentPage > 1 ? (
-            <Button
-              variant="outline"
-              size="sm"
-              render={<Link href={buildPageHref(currentPage - 1)} />}
-            >
-              <ChevronLeft className="size-4" />
-              Previous
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" disabled>
-              <ChevronLeft className="size-4" />
-              Previous
-            </Button>
-          )}
-
-          <span className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </span>
-
-          {currentPage < totalPages ? (
-            <Button
-              variant="outline"
-              size="sm"
-              render={<Link href={buildPageHref(currentPage + 1)} />}
-            >
-              Next
-              <ChevronRight className="size-4" />
-            </Button>
-          ) : (
-            <Button variant="outline" size="sm" disabled>
-              Next
-              <ChevronRight className="size-4" />
-            </Button>
-          )}
-        </div>
-      )}
+      {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} />}
     </div>
   )
 }
