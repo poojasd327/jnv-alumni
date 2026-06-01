@@ -209,6 +209,62 @@ export async function deletePost(id: string) {
   return { success: true }
 }
 
+export async function updatePost(id: string, data: { title: string; content: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Unauthorized" }
+
+  if (!data.title.trim() || !data.content.trim()) return { error: "Title and content are required" }
+  if (data.title.length > 300) return { error: "Title is too long (max 300 characters)" }
+
+  const { error } = await supabase
+    .from("forum_posts")
+    .update({
+      title: sanitizeInput(data.title, 300),
+      content: sanitizeInput(data.content, 50000),
+    })
+    .eq("id", id)
+    .eq("author_id", user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath(`/forum/${id}`)
+  revalidatePath("/forum")
+  return { success: true }
+}
+
+export async function togglePinPost(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Unauthorized" }
+
+  // Only admins can pin/unpin
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile || profile.role !== "admin") return { error: "Only admins can pin posts" }
+
+  const { data: post } = await supabase
+    .from("forum_posts")
+    .select("is_pinned")
+    .eq("id", id)
+    .single()
+
+  if (!post) return { error: "Post not found" }
+
+  const { error } = await supabase
+    .from("forum_posts")
+    .update({ is_pinned: !post.is_pinned })
+    .eq("id", id)
+
+  if (error) return { error: error.message }
+  revalidatePath(`/forum/${id}`)
+  revalidatePath("/forum")
+  return { success: true, pinned: !post.is_pinned }
+}
+
 export async function isPostLiked(postId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

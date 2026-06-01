@@ -1,13 +1,12 @@
 import type { Metadata } from "next"
 import { getPostById, getPostComments, isPostLiked } from "@/lib/actions/forum.actions"
+import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Eye, ThumbsUp, MessageCircle } from "lucide-react"
+import { Eye, Pin, MessageCircle } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
-import Link from "next/link"
 import { ShareButton } from "@/components/ui/share-button"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
@@ -31,11 +30,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function PostDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
   const [post, comments, liked] = await Promise.all([getPostById(id), getPostComments(id), isPostLiked(id)])
   if (!post) notFound()
 
   const author = post.profiles as { id: string; full_name: string; avatar_url: string | null; profession: string | null } | null
   const category = post.forum_categories as { name: string; slug: string } | null
+  const isAuthor = user?.id === post.author_id
+
+  // Check admin role
+  let isAdmin = false
+  if (user) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    isAdmin = profile?.role === "admin"
+  }
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -47,6 +57,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
       <div>
         <div className="flex items-center gap-2 mb-2">
           {category && <Badge variant="outline">{category.name}</Badge>}
+          {post.is_pinned && <Badge variant="secondary" className="bg-amber-100 text-amber-700"><Pin className="size-3 mr-1" />Pinned</Badge>}
         </div>
         <h1 className="text-2xl font-bold">{post.title}</h1>
         <div className="mt-2 flex items-center gap-3 text-sm text-muted-foreground">
@@ -66,7 +77,16 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
       </CardContent></Card>
 
       <div className="flex items-center gap-4 text-sm text-muted-foreground">
-        <PostActions postId={id} liked={liked} likesCount={post.likes_count} />
+        <PostActions
+          postId={id}
+          liked={liked}
+          likesCount={post.likes_count}
+          isAuthor={isAuthor}
+          isAdmin={isAdmin}
+          isPinned={post.is_pinned}
+          postTitle={post.title}
+          postContent={post.content}
+        />
         <span className="flex items-center gap-1"><MessageCircle className="size-4" />{post.comments_count} comments</span>
         <div className="ml-auto">
           <ReportButton contentType="forum_post" contentId={id} />
