@@ -13,6 +13,7 @@ import { ShareButton } from "@/components/ui/share-button"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { ApplyForm } from "./apply-form"
+import { ApplicationStatusSelect } from "./application-status-select"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -33,14 +34,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 const JOB_TYPE_LABELS: Record<string, string> = {
   full_time: "Full Time", part_time: "Part Time", contract: "Contract",
   internship: "Internship", freelance: "Freelance",
-}
-
-const APP_STATUS_COLORS: Record<string, string> = {
-  applied: "bg-blue-100 text-blue-700",
-  under_review: "bg-yellow-100 text-yellow-700",
-  interview: "bg-purple-100 text-purple-700",
-  selected: "bg-green-100 text-green-700",
-  rejected: "bg-red-100 text-red-700",
 }
 
 export default async function JobDetailPage({
@@ -163,7 +156,7 @@ export default async function JobDetailPage({
               return (
                 <Card key={app.id as string}>
                   <CardContent className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex items-center gap-3 min-w-0">
+                    <Link href={applicant ? `/directory/${applicant.id}` : "#"} className="flex items-center gap-3 min-w-0 hover:opacity-80 transition-opacity">
                       <Avatar className="size-8 shrink-0">
                         {applicant?.avatar_url && <AvatarImage src={applicant.avatar_url} />}
                         <AvatarFallback className="text-xs">{applicant ? getInitials(applicant.full_name) : "?"}</AvatarFallback>
@@ -171,9 +164,10 @@ export default async function JobDetailPage({
                       <div className="min-w-0">
                         <p className="font-medium text-sm truncate">{applicant?.full_name}</p>
                         <p className="text-xs text-muted-foreground truncate">{applicant?.profession} &middot; {formatDate(app.created_at as string)}</p>
+                        {app.cover_note ? <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{String(app.cover_note)}</p> : null}
                       </div>
-                    </div>
-                    <Badge className={`shrink-0 ${APP_STATUS_COLORS[app.status as string] || ""}`}>{(app.status as string).replace("_", " ")}</Badge>
+                    </Link>
+                    <ApplicationStatusSelect applicationId={app.id as string} currentStatus={app.status as string} />
                   </CardContent>
                 </Card>
               )

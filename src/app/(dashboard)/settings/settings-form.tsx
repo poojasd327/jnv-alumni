@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { changePassword, deleteAccount } from "@/lib/actions/settings.actions"
+import { changePassword, deleteAccount, updateNotificationPreferences } from "@/lib/actions/settings.actions"
+import type { NotificationPreferences } from "@/lib/actions/settings.actions"
 import { toast } from "sonner"
-import { Lock, Trash2, User, Shield, AlertTriangle, Download } from "lucide-react"
+import { Lock, Trash2, User, Shield, AlertTriangle, Download, Bell } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 
 interface SettingsFormProps {
@@ -21,12 +22,14 @@ interface SettingsFormProps {
     created_at: string
   } | null
   email: string
+  notificationPreferences: NotificationPreferences
 }
 
-export function SettingsForm({ profile, email }: SettingsFormProps) {
+export function SettingsForm({ profile, email, notificationPreferences }: SettingsFormProps) {
   return (
     <div className="space-y-6">
       <AccountInfoSection profile={profile} email={email} />
+      <NotificationPreferencesSection initialPrefs={notificationPreferences} />
       <ChangePasswordSection />
       <DataPrivacySection />
       <DangerZoneSection />
@@ -74,6 +77,63 @@ function AccountInfoSection({ profile, email }: { profile: SettingsFormProps["pr
         <p className="text-xs text-muted-foreground pt-2">
           To update your name, school, or batch details, please contact an administrator.
         </p>
+      </CardContent>
+    </Card>
+  )
+}
+
+const NOTIFICATION_OPTIONS: { key: keyof NotificationPreferences; label: string; description: string }[] = [
+  { key: "email_messages", label: "Direct Messages", description: "Get notified when someone sends you a message" },
+  { key: "email_job_updates", label: "Job Updates", description: "Updates on your job applications and new matching jobs" },
+  { key: "email_event_reminders", label: "Event Reminders", description: "Reminders for events you've registered for" },
+  { key: "email_forum_replies", label: "Forum Replies", description: "Notifications when someone replies to your posts" },
+  { key: "email_announcements", label: "Announcements", description: "Important announcements from the community" },
+  { key: "email_mentorship", label: "Mentorship", description: "Updates on your mentorship requests" },
+]
+
+function NotificationPreferencesSection({ initialPrefs }: { initialPrefs: NotificationPreferences }) {
+  const [prefs, setPrefs] = useState<NotificationPreferences>(initialPrefs)
+  const [saving, setSaving] = useState(false)
+
+  async function handleToggle(key: keyof NotificationPreferences) {
+    const updated = { ...prefs, [key]: !prefs[key] }
+    setPrefs(updated)
+    setSaving(true)
+    const result = await updateNotificationPreferences(updated)
+    setSaving(false)
+    if (result.error) {
+      toast.error(result.error)
+      setPrefs(prefs) // revert
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Bell className="size-4" /> Email Notifications
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {NOTIFICATION_OPTIONS.map((opt) => (
+          <div key={opt.key} className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{opt.label}</p>
+              <p className="text-xs text-muted-foreground">{opt.description}</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={prefs[opt.key]}
+              disabled={saving}
+              onClick={() => handleToggle(opt.key)}
+              className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${prefs[opt.key] ? "bg-primary" : "bg-muted"}`}
+            >
+              <span className={`inline-block size-4 rounded-full bg-white shadow-sm transition-transform ${prefs[opt.key] ? "translate-x-4" : "translate-x-0.5"}`} />
+            </button>
+          </div>
+        ))}
+        {saving && <p className="text-xs text-muted-foreground">Saving...</p>}
       </CardContent>
     </Card>
   )

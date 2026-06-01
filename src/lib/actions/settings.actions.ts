@@ -88,3 +88,43 @@ export async function deleteAccount(password: string) {
 
   redirect("/login")
 }
+
+export interface NotificationPreferences {
+  email_messages: boolean
+  email_job_updates: boolean
+  email_event_reminders: boolean
+  email_forum_replies: boolean
+  email_announcements: boolean
+  email_mentorship: boolean
+}
+
+const DEFAULT_PREFERENCES: NotificationPreferences = {
+  email_messages: true,
+  email_job_updates: true,
+  email_event_reminders: true,
+  email_forum_replies: true,
+  email_announcements: true,
+  email_mentorship: true,
+}
+
+export async function getNotificationPreferences(): Promise<NotificationPreferences> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return DEFAULT_PREFERENCES
+
+  const stored = user.user_metadata?.notification_preferences as Partial<NotificationPreferences> | undefined
+  return { ...DEFAULT_PREFERENCES, ...stored }
+}
+
+export async function updateNotificationPreferences(preferences: NotificationPreferences) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Not authenticated" }
+
+  const { error } = await supabase.auth.updateUser({
+    data: { notification_preferences: preferences },
+  })
+
+  if (error) return { error: error.message }
+  return { success: true }
+}

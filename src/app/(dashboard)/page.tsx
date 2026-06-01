@@ -15,6 +15,10 @@ import {
   MessageSquare,
   UserCircle,
   Megaphone,
+  FileText,
+  ClipboardList,
+  CalendarCheck,
+  Package,
 } from "lucide-react"
 import type { Profile } from "@/lib/types/database.types"
 
@@ -86,6 +90,27 @@ export default async function DashboardHome() {
       .eq("status", "active"),
   ])
 
+  // Fetch user-specific counts in parallel
+  const [myJobsRes, myAppsRes, myEventsRes, myListingsRes] = await Promise.all([
+    supabase
+      .from("jobs")
+      .select("*", { count: "exact", head: true })
+      .eq("posted_by", user.id),
+    supabase
+      .from("job_applications")
+      .select("*", { count: "exact", head: true })
+      .eq("applicant_id", user.id),
+    supabase
+      .from("event_registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id),
+    supabase
+      .from("marketplace_listings")
+      .select("*", { count: "exact", head: true })
+      .eq("seller_id", user.id)
+      .neq("status", "deleted"),
+  ])
+
   // Fetch recent items
   const [{ data: recentEvents }, { data: recentJobs }, { data: recentPosts }, { data: recentAnnouncements }] = await Promise.all([
     supabase
@@ -139,6 +164,13 @@ export default async function DashboardHome() {
       icon: ShoppingBag,
       href: "/marketplace",
     },
+  ]
+
+  const myActivity = [
+    { label: "Jobs Posted", count: myJobsRes.count ?? 0, icon: FileText, href: "/jobs/my-jobs" },
+    { label: "Applications", count: myAppsRes.count ?? 0, icon: ClipboardList, href: "/jobs/my-applications" },
+    { label: "Events Joined", count: myEventsRes.count ?? 0, icon: CalendarCheck, href: "/events" },
+    { label: "My Listings", count: myListingsRes.count ?? 0, icon: Package, href: "/marketplace/my-listings" },
   ]
 
   const quickActions = [
@@ -241,6 +273,26 @@ export default async function DashboardHome() {
               <action.icon className="size-5 text-primary" />
               <span className="text-xs">{action.label}</span>
             </Button>
+          ))}
+        </div>
+      </div>
+
+      {/* Your Activity */}
+      <div>
+        <h2 className="text-sm font-semibold mb-3">Your Activity</h2>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {myActivity.map((item) => (
+            <Link key={item.href} href={item.href}>
+              <Card className="transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+                <CardContent className="p-3 flex items-center gap-3">
+                  <item.icon className="size-4 text-muted-foreground shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-lg font-bold leading-tight">{item.count}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{item.label}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       </div>
