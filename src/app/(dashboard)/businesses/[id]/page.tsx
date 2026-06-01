@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Globe, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
 import { getInitials } from "@/lib/utils"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
+import { JsonLd } from "@/components/shared/json-ld"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -33,6 +34,24 @@ export default async function BusinessDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name: business.name,
+        description: business.description,
+        ...(business.category ? { "@category": business.category } : {}),
+        ...(business.website ? { url: business.website } : {}),
+        ...(business.phone ? { telephone: business.phone } : {}),
+        ...(business.email ? { email: business.email } : {}),
+        ...((business.location_city || business.location_state) ? {
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: business.location_city,
+            addressRegion: business.location_state,
+            addressCountry: "IN",
+          },
+        } : {}),
+      }} />
       <Breadcrumbs items={[{ label: "Businesses", href: "/businesses" }, { label: business.name }]} />
 
       <div className="flex items-start gap-3">

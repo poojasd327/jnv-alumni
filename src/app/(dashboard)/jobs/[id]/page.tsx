@@ -15,6 +15,7 @@ import { ReportButton } from "@/components/ui/report-button"
 import { ApplyForm } from "./apply-form"
 import { ApplicationStatusSelect } from "./application-status-select"
 import { JobOwnerActions } from "./job-owner-actions"
+import { JsonLd } from "@/components/shared/json-ld"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -61,8 +62,49 @@ export default async function JobDetailPage({
 
   const poster = job.profiles as { id: string; full_name: string; avatar_url: string | null; profession: string | null; company: string | null } | null
 
+  const employmentTypeMap: Record<string, string> = {
+    full_time: "FULL_TIME", part_time: "PART_TIME", contract: "CONTRACTOR",
+    internship: "INTERN", freelance: "OTHER",
+  }
+
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        title: job.title,
+        description: job.description,
+        datePosted: job.created_at,
+        hiringOrganization: {
+          "@type": "Organization",
+          name: job.company,
+        },
+        employmentType: employmentTypeMap[job.job_type] || "OTHER",
+        ...(job.location_city ? {
+          jobLocation: {
+            "@type": "Place",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: job.location_city,
+              addressRegion: job.location_state,
+              addressCountry: "IN",
+            },
+          },
+        } : {}),
+        ...((job.salary_min || job.salary_max) ? {
+          baseSalary: {
+            "@type": "MonetaryAmount",
+            currency: "INR",
+            value: {
+              "@type": "QuantitativeValue",
+              ...(job.salary_min ? { minValue: job.salary_min } : {}),
+              ...(job.salary_max ? { maxValue: job.salary_max } : {}),
+              unitText: "YEAR",
+            },
+          },
+        } : {}),
+        ...(job.skills_required?.length ? { skills: job.skills_required.join(", ") } : {}),
+      }} />
       <div className="flex items-center justify-between">
         <Breadcrumbs items={[{ label: "Jobs", href: "/jobs" }, { label: `${job.title} at ${job.company}` }]} />
         <ShareButton title={`${job.title} at ${job.company}`} text={`Check out this job: ${job.title} at ${job.company} on JNV Alumni Network`} />

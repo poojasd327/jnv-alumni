@@ -20,6 +20,7 @@ import { MapPin, Calendar, Eye, Pencil } from "lucide-react"
 import type { MarketplaceListing } from "@/lib/types/database.types"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ImageGallery } from "@/components/marketplace/image-gallery"
+import { JsonLd } from "@/components/shared/json-ld"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -94,8 +95,30 @@ export default async function ListingDetailPage({
   const wishlistedIds = await getWishlistedIds()
   const isWishlisted = wishlistedIds.includes(listing.id)
 
+  const conditionMap: Record<string, string> = {
+    new: "NewCondition", like_new: "UsedCondition", good: "UsedCondition", fair: "UsedCondition",
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: listing.title,
+        description: listing.description,
+        image: listing.images,
+        offers: {
+          "@type": "Offer",
+          price: listing.price,
+          priceCurrency: "INR",
+          availability: listing.status === "sold"
+            ? "https://schema.org/SoldOut"
+            : "https://schema.org/InStock",
+          itemCondition: `https://schema.org/${conditionMap[listing.condition] || "UsedCondition"}`,
+          seller: seller ? { "@type": "Person", name: seller.full_name } : undefined,
+        },
+        ...(listing.marketplace_categories ? { category: listing.marketplace_categories.name } : {}),
+      }} />
       <div className="flex items-center justify-between">
         <Breadcrumbs items={[{ label: "Marketplace", href: "/marketplace" }, { label: listing.title }]} />
         <ShareButton title={listing.title} text={`Check out: ${listing.title} on JNV Alumni Marketplace`} />

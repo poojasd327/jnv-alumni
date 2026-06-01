@@ -14,6 +14,7 @@ import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { EventActions } from "./event-actions"
 import { EventOwnerActions } from "./event-owner-actions"
+import { JsonLd } from "@/components/shared/json-ld"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -56,6 +57,34 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Event",
+        name: event.title,
+        description: event.description,
+        startDate: event.event_date,
+        ...(event.end_date ? { endDate: event.end_date } : {}),
+        eventStatus: event.status === "cancelled"
+          ? "https://schema.org/EventCancelled"
+          : "https://schema.org/EventScheduled",
+        eventAttendanceMode: event.is_online
+          ? "https://schema.org/OnlineEventAttendanceMode"
+          : "https://schema.org/OfflineEventAttendanceMode",
+        ...(event.is_online ? {} : {
+          location: {
+            "@type": "Place",
+            name: event.venue || undefined,
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: event.location_city,
+              addressRegion: event.location_state,
+              addressCountry: "IN",
+            },
+          },
+        }),
+        ...(event.max_attendees ? { maximumAttendeeCapacity: event.max_attendees } : {}),
+        organizer: organizer ? { "@type": "Person", name: organizer.full_name } : undefined,
+      }} />
       <div className="flex items-center justify-between">
         <Breadcrumbs items={[{ label: "Events", href: "/events" }, { label: event.title }]} />
         <ShareButton title={event.title} text={`Check out this event: ${event.title} on JNV Alumni Network`} />
