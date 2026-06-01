@@ -75,17 +75,43 @@ export async function createAnnouncement(data: {
   return { success: true }
 }
 
+export async function updateAnnouncement(id: string, data: { title: string; content: string; type: string }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Unauthorized" }
+
+  if (!data.title.trim() || !data.content.trim()) return { error: "Title and content are required" }
+  if (data.title.length > 200) return { error: "Title is too long (max 200 characters)" }
+
+  const { error } = await supabase
+    .from("announcements")
+    .update({
+      title: sanitizeInput(data.title, 200),
+      content: sanitizeInput(data.content, 20000),
+      type: data.type as AnnouncementType,
+    })
+    .eq("id", id)
+    .eq("author_id", user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath(`/announcements/${id}`)
+  revalidatePath("/announcements")
+  return { success: true }
+}
+
 export async function deleteAnnouncement(id: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
-  const { error } = await supabase
-    .from("announcements")
-    .delete()
-    .eq("id", id)
-    .eq("author_id", user.id)
+  // Allow author or admin
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
 
+  let query = supabase.from("announcements").delete().eq("id", id)
+  if (!isAdmin) query = query.eq("author_id", user.id)
+
+  const { error } = await query
   if (error) return { error: error.message }
   revalidatePath("/announcements")
   return { success: true }

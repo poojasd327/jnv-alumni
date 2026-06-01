@@ -102,18 +102,81 @@ export async function createEvent(data: {
   return { success: true }
 }
 
+export async function updateEvent(id: string, data: {
+  title?: string
+  description?: string
+  event_date?: string
+  end_date?: string | null
+  venue?: string | null
+  location_city?: string | null
+  location_state?: string | null
+  is_online?: boolean
+  meeting_url?: string | null
+  max_attendees?: number | null
+}) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Unauthorized" }
+
+  if (data.title !== undefined && !data.title.trim()) return { error: "Title is required" }
+  if (data.title && data.title.length > 200) return { error: "Title is too long (max 200 characters)" }
+
+  const { error } = await supabase
+    .from("events")
+    .update({
+      ...(data.title !== undefined && { title: sanitizeInput(data.title, 200) }),
+      ...(data.description !== undefined && { description: sanitizeInput(data.description, 10000) }),
+      ...(data.event_date !== undefined && { event_date: data.event_date }),
+      ...(data.end_date !== undefined && { end_date: data.end_date }),
+      ...(data.venue !== undefined && { venue: data.venue }),
+      ...(data.location_city !== undefined && { location_city: data.location_city }),
+      ...(data.location_state !== undefined && { location_state: data.location_state }),
+      ...(data.is_online !== undefined && { is_online: data.is_online }),
+      ...(data.meeting_url !== undefined && { meeting_url: data.meeting_url }),
+      ...(data.max_attendees !== undefined && { max_attendees: data.max_attendees }),
+    })
+    .eq("id", id)
+    .eq("organizer_id", user.id)
+
+  if (error) return { error: error.message }
+  revalidatePath(`/events/${id}`)
+  revalidatePath("/events")
+  return { success: true }
+}
+
+export async function deleteEvent(id: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "Unauthorized" }
+
+  // Allow owner or admin
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
+
+  let query = supabase.from("events").delete().eq("id", id)
+  if (!isAdmin) query = query.eq("organizer_id", user.id)
+
+  const { error } = await query
+  if (error) return { error: error.message }
+  revalidatePath("/events")
+  return { success: true }
+}
+
 export async function cancelEvent(id: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
-  const { error } = await supabase
-    .from("events")
-    .update({ status: "cancelled" as const })
-    .eq("id", id)
-    .eq("organizer_id", user.id)
+  // Allow owner or admin
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
 
+  let query = supabase.from("events").update({ status: "cancelled" as const }).eq("id", id)
+  if (!isAdmin) query = query.eq("organizer_id", user.id)
+
+  const { error } = await query
   if (error) return { error: error.message }
+  revalidatePath(`/events/${id}`)
   revalidatePath("/events")
   return { success: true }
 }

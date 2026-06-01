@@ -165,12 +165,14 @@ export async function deleteJob(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
-  const { error } = await supabase
-    .from("jobs")
-    .update({ status: "closed" as const })
-    .eq("id", id)
-    .eq("posted_by", user.id)
+  // Allow owner or admin
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
 
+  let query = supabase.from("jobs").update({ status: "closed" as const }).eq("id", id)
+  if (!isAdmin) query = query.eq("posted_by", user.id)
+
+  const { error } = await query
   if (error) return { error: error.message }
 
   revalidatePath("/jobs")
@@ -243,14 +245,19 @@ export async function getJobApplications(jobId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return []
 
-  // Verify the user owns this job
+  // Verify the user owns this job or is admin
   const { data: job } = await supabase
     .from("jobs")
     .select("posted_by")
     .eq("id", jobId)
     .single()
 
-  if (!job || job.posted_by !== user.id) return []
+  if (!job) return []
+
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
+
+  if (job.posted_by !== user.id && !isAdmin) return []
 
   const { data } = await supabase
     .from("job_applications")

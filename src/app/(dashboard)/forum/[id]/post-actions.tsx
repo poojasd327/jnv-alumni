@@ -130,19 +130,20 @@ export function PostActions({
         </Button>
 
         {isAuthor && (
-          <>
-            <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>
-              <Pencil className="size-3.5 mr-1" />Edit
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive hover:text-destructive"
-              onClick={() => setShowDelete(true)}
-            >
-              <Trash2 className="size-3.5 mr-1" />Delete
-            </Button>
-          </>
+          <Button variant="ghost" size="sm" onClick={() => setEditing(true)}>
+            <Pencil className="size-3.5 mr-1" />Edit
+          </Button>
+        )}
+
+        {(isAuthor || isAdmin) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive"
+            onClick={() => setShowDelete(true)}
+          >
+            <Trash2 className="size-3.5 mr-1" />Delete
+          </Button>
         )}
 
         {isAdmin && (

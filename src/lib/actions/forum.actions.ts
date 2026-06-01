@@ -198,12 +198,14 @@ export async function deletePost(id: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
-  const { error } = await supabase
-    .from("forum_posts")
-    .delete()
-    .eq("id", id)
-    .eq("author_id", user.id)
+  // Allow author or admin
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
 
+  let query = supabase.from("forum_posts").delete().eq("id", id)
+  if (!isAdmin) query = query.eq("author_id", user.id)
+
+  const { error } = await query
   if (error) return { error: error.message }
   revalidatePath("/forum")
   return { success: true }

@@ -13,6 +13,7 @@ import { ShareButton } from "@/components/ui/share-button"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { EventActions } from "./event-actions"
+import { EventOwnerActions } from "./event-owner-actions"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -44,6 +45,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   const { data: { user } } = await supabase.auth.getUser()
   const isOwner = user?.id === event.organizer_id
   const registered = user ? await isRegistered(id) : false
+
+  let isAdmin = false
+  if (user) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    isAdmin = profile?.role === "admin"
+  }
 
   const organizer = event.profiles as { id: string; full_name: string; avatar_url: string | null; profession: string | null } | null
 
@@ -88,6 +95,23 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
             <p className="text-sm text-muted-foreground">Organizer</p>
           </div>
         </CardContent></Card>
+      )}
+
+      {(isOwner || isAdmin) && (
+        <EventOwnerActions
+          eventId={id}
+          eventTitle={event.title}
+          eventDescription={event.description || ""}
+          eventDate={event.event_date}
+          endDate={event.end_date}
+          venue={event.venue}
+          locationCity={event.location_city}
+          locationState={event.location_state}
+          isOnline={event.is_online}
+          meetingUrl={event.meeting_url}
+          maxAttendees={event.max_attendees}
+          status={event.status}
+        />
       )}
 
       {!isOwner && event.status === "upcoming" && (

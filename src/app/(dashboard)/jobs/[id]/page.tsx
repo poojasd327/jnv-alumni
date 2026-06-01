@@ -14,6 +14,7 @@ import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { ApplyForm } from "./apply-form"
 import { ApplicationStatusSelect } from "./application-status-select"
+import { JobOwnerActions } from "./job-owner-actions"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -48,8 +49,15 @@ export default async function JobDetailPage({
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   const isOwner = user?.id === job.posted_by
+
+  let isAdmin = false
+  if (user) {
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    isAdmin = profile?.role === "admin"
+  }
+
   const hasApplied = user ? await checkIfApplied(id) : false
-  const applications = isOwner ? await getJobApplications(id) : []
+  const applications = (isOwner || isAdmin) ? await getJobApplications(id) : []
 
   const poster = job.profiles as { id: string; full_name: string; avatar_url: string | null; profession: string | null; company: string | null } | null
 
@@ -138,6 +146,26 @@ export default async function JobDetailPage({
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {(isOwner || isAdmin) && (
+        <JobOwnerActions
+          jobId={id}
+          title={job.title}
+          company={job.company}
+          description={job.description || ""}
+          jobType={job.job_type}
+          locationCity={job.location_city}
+          locationState={job.location_state}
+          salaryMin={job.salary_min}
+          salaryMax={job.salary_max}
+          experienceMin={job.experience_min}
+          experienceMax={job.experience_max}
+          skillsRequired={job.skills_required || []}
+          referralAvailable={job.referral_available || false}
+          contactEmail={job.contact_email}
+          applyUrl={job.apply_url}
+        />
       )}
 
       {!isOwner && !hasApplied && (

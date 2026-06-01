@@ -23,6 +23,7 @@ type ContentType =
   | "business"
   | "media"
   | "profile"
+  | "announcement"
 
 interface ReportButtonProps {
   contentType: ContentType

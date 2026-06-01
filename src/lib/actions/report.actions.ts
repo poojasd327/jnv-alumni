@@ -6,7 +6,7 @@ import { sanitizeInput } from "@/lib/utils"
 
 const VALID_CONTENT_TYPES = [
   "forum_post", "forum_comment", "marketplace_listing", "job",
-  "event", "business", "media", "profile",
+  "event", "business", "media", "profile", "announcement",
 ] as const
 
 const VALID_REASONS = [

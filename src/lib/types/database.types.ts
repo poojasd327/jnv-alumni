@@ -18,7 +18,7 @@ export type EventStatus = "upcoming" | "ongoing" | "completed" | "cancelled"
 export type AnnouncementType = "general" | "achievement" | "opportunity" | "update"
 export type MentorshipStatus = "pending" | "accepted" | "active" | "completed" | "declined"
 export type NotificationType = "mention" | "reply" | "like" | "follow" | "event_reminder" | "job_match" | "approval" | "announcement" | "mentorship" | "system"
-export type ReportContentType = "forum_post" | "forum_comment" | "marketplace_listing" | "job" | "event" | "business" | "media" | "profile"
+export type ReportContentType = "forum_post" | "forum_comment" | "marketplace_listing" | "job" | "event" | "business" | "media" | "profile" | "announcement"
 export type ReportReason = "spam" | "harassment" | "inappropriate" | "misinformation" | "fraud" | "other"
 export type ReportStatus = "pending" | "reviewed" | "action_taken" | "dismissed"
 
