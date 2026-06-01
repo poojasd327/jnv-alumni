@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Calendar, MapPin, Globe, Users } from "lucide-react"
+import { Calendar, MapPin, Globe, Users } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Link from "next/link"
 import { ShareButton } from "@/components/ui/share-button"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { EventActions } from "./event-actions"
 
@@ -49,7 +50,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" render={<Link href="/events" />}><ArrowLeft className="size-4 mr-1" /> Back to Events</Button>
+        <Breadcrumbs items={[{ label: "Events", href: "/events" }, { label: event.title }]} />
         <ShareButton title={event.title} text={`Check out this event: ${event.title} on JNV Alumni Network`} />
       </div>
 

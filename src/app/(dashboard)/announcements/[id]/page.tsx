@@ -1,13 +1,11 @@
 import type { Metadata } from "next"
 import { getAnnouncementById } from "@/lib/actions/announcements.actions"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
-import Link from "next/link"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 
 const TYPE_COLORS: Record<string, string> = {
   general: "bg-gray-100 text-gray-700", achievement: "bg-amber-100 text-amber-700",
@@ -38,7 +36,7 @@ export default async function AnnouncementDetailPage({ params }: { params: Promi
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Button variant="ghost" size="sm" render={<Link href="/announcements" />}><ArrowLeft className="size-4 mr-1" /> Back</Button>
+      <Breadcrumbs items={[{ label: "Announcements", href: "/announcements" }, { label: announcement.title }]} />
 
       <div>
         <div className="flex items-center gap-3">

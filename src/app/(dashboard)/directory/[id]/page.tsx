@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import {
-  ArrowLeft,
   MapPin,
   Briefcase,
   Building2,
@@ -20,6 +19,7 @@ import { createClient } from "@/lib/supabase/server"
 import { getInitials, formatDate } from "@/lib/utils"
 import type { Profile } from "@/lib/types/database.types"
 import { MessageButton } from "@/components/messages/message-button"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -68,11 +68,7 @@ export default async function AlumniDetailPage({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      {/* Back Button */}
-      <Button variant="ghost" size="sm" render={<Link href="/directory" />}>
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Directory
-      </Button>
+      <Breadcrumbs items={[{ label: "Directory", href: "/directory" }, { label: profile.full_name }]} />
 
       {/* Profile Header */}
       <Card>

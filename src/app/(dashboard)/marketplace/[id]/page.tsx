@@ -16,8 +16,9 @@ import { MarkAsSoldButton } from "@/components/marketplace/mark-as-sold-button"
 import { ShareButton } from "@/components/ui/share-button"
 import { ReportButton } from "@/components/ui/report-button"
 import { formatDate, getInitials } from "@/lib/utils"
-import { ArrowLeft, MapPin, Calendar, Eye, Pencil, ImageIcon } from "lucide-react"
+import { MapPin, Calendar, Eye, Pencil, ImageIcon } from "lucide-react"
 import type { MarketplaceListing } from "@/lib/types/database.types"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -90,10 +91,7 @@ export default async function ListingDetailPage({
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" render={<Link href="/marketplace" />}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Marketplace
-        </Button>
+        <Breadcrumbs items={[{ label: "Marketplace", href: "/marketplace" }, { label: listing.title }]} />
         <ShareButton title={listing.title} text={`Check out: ${listing.title} on JNV Alumni Marketplace`} />
       </div>
 

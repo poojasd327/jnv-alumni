@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Eye, ThumbsUp, MessageCircle } from "lucide-react"
+import { Eye, ThumbsUp, MessageCircle } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Link from "next/link"
 import { ShareButton } from "@/components/ui/share-button"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { PostActions } from "./post-actions"
 import { CommentSection } from "./comment-section"
@@ -39,7 +40,7 @@ export default async function PostDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" render={<Link href="/forum" />}><ArrowLeft className="size-4 mr-1" /> Back</Button>
+        <Breadcrumbs items={[{ label: "Forum", href: "/forum" }, { label: post.title }]} />
         <ShareButton title={post.title} text={`Check out this post: ${post.title} on JNV Alumni Forum`} />
       </div>
 

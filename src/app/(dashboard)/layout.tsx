@@ -5,6 +5,8 @@ import { Topbar } from "@/components/layout/topbar"
 import { getUnreadCount } from "@/lib/actions/notifications.actions"
 import { trackActivity } from "@/lib/actions/activity.actions"
 import { PresenceProvider } from "@/components/providers/presence-provider"
+import { ScrollToTop } from "@/components/shared/scroll-to-top"
+import { KeyboardShortcuts } from "@/components/shared/keyboard-shortcuts"
 import type { Profile } from "@/lib/types/database.types"
 
 export default async function DashboardLayout({
@@ -68,6 +70,8 @@ export default async function DashboardLayout({
           <main id="main-content" className="flex-1 overflow-y-auto bg-background p-4 md:p-6" role="main">
             {children}
           </main>
+          <ScrollToTop />
+          <KeyboardShortcuts />
         </div>
       </div>
     </PresenceProvider>

@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, MapPin, Briefcase, IndianRupee, UserCheck, ExternalLink } from "lucide-react"
+import { MapPin, Briefcase, IndianRupee, UserCheck, ExternalLink } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Link from "next/link"
 import { ShareButton } from "@/components/ui/share-button"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 import { ReportButton } from "@/components/ui/report-button"
 import { ApplyForm } from "./apply-form"
 
@@ -62,9 +63,7 @@ export default async function JobDetailPage({
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" render={<Link href="/jobs" />}>
-          <ArrowLeft className="size-4 mr-1" /> Back to Jobs
-        </Button>
+        <Breadcrumbs items={[{ label: "Jobs", href: "/jobs" }, { label: `${job.title} at ${job.company}` }]} />
         <ShareButton title={`${job.title} at ${job.company}`} text={`Check out this job: ${job.title} at ${job.company} on JNV Alumni Network`} />
       </div>
 

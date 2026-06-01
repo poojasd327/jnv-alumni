@@ -1,13 +1,12 @@
 import type { Metadata } from "next"
 import { getBusinessById } from "@/lib/actions/businesses.actions"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft, Globe, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
+import { Globe, Phone, Mail, MapPin, CheckCircle } from "lucide-react"
 import { getInitials } from "@/lib/utils"
-import Link from "next/link"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -34,7 +33,7 @@ export default async function BusinessDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Button variant="ghost" size="sm" render={<Link href="/businesses" />}><ArrowLeft className="size-4 mr-1" /> Back</Button>
+      <Breadcrumbs items={[{ label: "Businesses", href: "/businesses" }, { label: business.name }]} />
 
       <div className="flex items-start gap-3">
         <div>

@@ -1,14 +1,12 @@
 import type { Metadata } from "next"
 import { getMediaById } from "@/lib/actions/media.actions"
 import { notFound } from "next/navigation"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ArrowLeft } from "lucide-react"
 import { formatDate, getInitials } from "@/lib/utils"
 import Image from "next/image"
-import Link from "next/link"
+import { Breadcrumbs } from "@/components/shared/breadcrumbs"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -35,7 +33,7 @@ export default async function MediaDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <Button variant="ghost" size="sm" render={<Link href="/media" />}><ArrowLeft className="size-4 mr-1" /> Back</Button>
+      <Breadcrumbs items={[{ label: "Media", href: "/media" }, { label: media.title }]} />
 
       <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
         {media.file_type === "image" ? (
