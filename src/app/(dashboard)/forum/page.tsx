@@ -25,19 +25,19 @@ export default async function ForumPage({ searchParams }: { searchParams: Promis
         <Button className="w-full sm:w-auto" render={<Link href="/forum/new" />}><Plus className="size-4 mr-1" />New Post</Button>
       </div>
 
-      <form className="flex flex-col gap-2 sm:flex-row">
-        <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" /><Input name="q" placeholder="Search discussions..." defaultValue={params.q} className="pl-9" /></div>
+      <form className="flex flex-col gap-2 sm:flex-row" role="search" aria-label="Search discussions">
+        <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden="true" /><Input name="q" placeholder="Search discussions..." defaultValue={params.q} className="pl-9" aria-label="Search discussions" /></div>
         <Button type="submit" variant="outline">Search</Button>
       </form>
 
-      <div className="flex gap-2 flex-wrap">
+      <nav className="flex gap-2 flex-wrap" aria-label="Forum categories">
         <Button variant={!params.category ? "default" : "outline"} size="sm" render={<Link href="/forum" />}>All</Button>
         {categories.map((cat: Record<string, unknown>) => (
           <Button key={cat.slug as string} variant={params.category === cat.slug ? "default" : "outline"} size="sm" render={<Link href={`/forum?category=${cat.slug}`} />}>
             {cat.name as string}
           </Button>
         ))}
-      </div>
+      </nav>
 
       {posts.length === 0 ? (
         <div className="text-center py-8 sm:py-12">

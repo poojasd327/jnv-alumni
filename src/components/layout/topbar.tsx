@@ -40,7 +40,7 @@ interface TopbarProps {
 
 export function Topbar({ profile, unreadNotifications = 0 }: TopbarProps) {
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4">
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b bg-card px-4" role="banner" aria-label="Top navigation">
       {/* Mobile Nav Trigger */}
       <MobileNav profile={profile} />
 
@@ -70,6 +70,7 @@ export function Topbar({ profile, unreadNotifications = 0 }: TopbarProps) {
       {/* User Dropdown */}
       <DropdownMenu>
         <DropdownMenuTrigger
+          aria-label="User menu"
           className={cn(
             "flex items-center gap-2 rounded-lg px-2 py-1.5",
             "transition-colors hover:bg-muted"

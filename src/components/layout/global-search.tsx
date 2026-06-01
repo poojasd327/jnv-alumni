@@ -73,9 +73,10 @@ export function GlobalSearch() {
       {/* Search Trigger Button */}
       <button
         onClick={() => setOpen(true)}
+        aria-label="Search pages and actions (Ctrl+K)"
         className="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       >
-        <Search className="size-4" />
+        <Search className="size-4" aria-hidden="true" />
         <span className="hidden sm:inline">Search...</span>
         <kbd className="pointer-events-none hidden select-none rounded border bg-background px-1.5 py-0.5 font-mono text-[10px] font-medium text-muted-foreground sm:inline-block">
           Ctrl K
@@ -89,10 +90,11 @@ export function GlobalSearch() {
           <div
             className="fixed inset-0 bg-black/50"
             onClick={() => setOpen(false)}
+            aria-hidden="true"
           />
 
           {/* Dialog */}
-          <div className="fixed left-1/2 top-[20%] z-50 w-full max-w-lg -translate-x-1/2 px-4">
+          <div className="fixed left-1/2 top-[20%] z-50 w-full max-w-lg -translate-x-1/2 px-4" role="dialog" aria-label="Search" aria-modal="true">
             <Command
               className="rounded-xl border bg-popover text-popover-foreground shadow-2xl"
               loop

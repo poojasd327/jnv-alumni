@@ -29,19 +29,19 @@ export default async function EventsPage({
         <Button className="w-full sm:w-auto" render={<Link href="/events/new" />}><Plus className="size-4 mr-1" />Create Event</Button>
       </div>
 
-      <form className="flex flex-col gap-2 sm:flex-row">
+      <form className="flex flex-col gap-2 sm:flex-row" role="search" aria-label="Search events">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-          <Input name="q" placeholder="Search events..." defaultValue={params.q} className="pl-9" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden="true" />
+          <Input name="q" placeholder="Search events..." defaultValue={params.q} className="pl-9" aria-label="Search events" />
         </div>
         <Button type="submit" variant="outline">Search</Button>
       </form>
 
-      <div className="flex flex-wrap gap-2">
+      <nav className="flex flex-wrap gap-2" aria-label="Event status filters">
         <Button variant={!params.status ? "default" : "outline"} size="sm" render={<Link href="/events" />}>All</Button>
         <Button variant={params.status === "upcoming" ? "default" : "outline"} size="sm" render={<Link href="/events?status=upcoming" />}>Upcoming</Button>
         <Button variant={params.status === "past" ? "default" : "outline"} size="sm" render={<Link href="/events?status=past" />}>Past</Button>
-      </div>
+      </nav>
 
       {events.length === 0 ? (
         <div className="text-center py-8 sm:py-12">

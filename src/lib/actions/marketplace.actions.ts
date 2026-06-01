@@ -218,12 +218,14 @@ export async function updateListingStatus(id: string, status: "active" | "sold" 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
-  const { error } = await supabase
-    .from("marketplace_listings")
-    .update({ status })
-    .eq("id", id)
-    .eq("seller_id", user.id)
+  // Allow owner or admin
+  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+  const isAdmin = profile?.role === "admin"
 
+  let query = supabase.from("marketplace_listings").update({ status }).eq("id", id)
+  if (!isAdmin) query = query.eq("seller_id", user.id)
+
+  const { error } = await query
   if (error) return { error: error.message }
 
   revalidatePath("/marketplace")

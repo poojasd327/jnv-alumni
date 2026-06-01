@@ -75,6 +75,11 @@ export default async function ListingDetailPage({
   const { data: { user } } = await supabase.auth.getUser()
 
   const isOwner = user?.id === listing.seller_id
+  let isAdmin = false
+  if (user) {
+    const { data: roleData } = await supabase.from("profiles").select("role").eq("id", user.id).single()
+    isAdmin = roleData?.role === "admin"
+  }
 
   // Get seller profile for contact info
   const { data: sellerData } = await supabase
@@ -203,12 +208,14 @@ export default async function ListingDetailPage({
                 {!isOwner && listing.status === "sold" && (
                   <p className="text-sm text-muted-foreground text-center">This item has been sold</p>
                 )}
-                {isOwner && (
+                {(isOwner || isAdmin) && (
                   <>
-                    <Button variant="outline" className="w-full" render={<Link href={`/marketplace/${listing.id}/edit`} />}>
-                        <Pencil className="h-4 w-4 mr-2" />
-                        Edit Listing
-                    </Button>
+                    {isOwner && (
+                      <Button variant="outline" className="w-full" render={<Link href={`/marketplace/${listing.id}/edit`} />}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit Listing
+                      </Button>
+                    )}
                     {listing.status === "active" && (
                       <MarkAsSoldButton listingId={listing.id} />
                     )}

@@ -34,21 +34,22 @@ export default async function JobsPage({
         </Button>
       </div>
 
-      <form className="flex flex-col gap-2 sm:flex-row">
+      <form className="flex flex-col gap-2 sm:flex-row" role="search" aria-label="Search jobs">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" aria-hidden="true" />
           <Input
             name="q"
             placeholder="Search jobs..."
             defaultValue={params.q}
             className="pl-9"
+            aria-label="Search jobs"
           />
         </div>
-        <Input name="city" placeholder="City" defaultValue={params.city} className="w-full sm:w-32" />
+        <Input name="city" placeholder="City" defaultValue={params.city} className="w-full sm:w-32" aria-label="Filter by city" />
         <Button type="submit" variant="outline">Search</Button>
       </form>
 
-      <div className="flex flex-wrap gap-2 text-sm">
+      <nav className="flex flex-wrap gap-2 text-sm" aria-label="Job type filters">
         <Button
           variant={!params.type ? "default" : "outline"}
           size="sm"
@@ -73,7 +74,7 @@ export default async function JobsPage({
         >
           Referral Available
         </Button>
-      </div>
+      </nav>
 
       {jobs.length === 0 ? (
         <div className="text-center py-8 sm:py-12">
