@@ -56,7 +56,6 @@ export function ListingForm({ categories, userId, listing }: ListingFormProps) {
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = useForm<ListingFormData>({
     resolver: zodResolver(listingSchema),

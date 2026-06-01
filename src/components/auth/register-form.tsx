@@ -53,7 +53,8 @@ export function RegisterForm() {
 
   async function onSubmit(data: RegisterFormData) {
     setLoading(true)
-    const { confirm_password, ...payload } = data
+    const { confirm_password: _cp, ...payload } = data
+    void _cp
     const result = await registerAction(payload)
     if (result?.error) {
       toast.error(result.error)

@@ -23,6 +23,10 @@ export async function submitReport(data: {
   reason: ReportReason
   description?: string
 }) {
+  // Runtime validation
+  if (!VALID_CONTENT_TYPES.includes(data.contentType)) return { error: "Invalid content type" }
+  if (!VALID_REASONS.includes(data.reason)) return { error: "Invalid reason" }
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Not authenticated" }

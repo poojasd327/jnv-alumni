@@ -33,6 +33,7 @@ export function NotificationBell({ initialCount, userId }: { initialCount: numbe
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(initialCount)
   const [loaded, setLoaded] = useState(false)
+  const [now, setNow] = useState(Date.now)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
 
@@ -41,14 +42,16 @@ export function NotificationBell({ initialCount, userId }: { initialCount: numbe
     const result = await getNotifications(10)
     setNotifications(result.notifications as unknown as Notification[])
     setUnreadCount(result.unreadCount)
+    setNow(Date.now())
     setLoaded(true)
   }, [])
 
-  useEffect(() => {
-    if (open && !loaded) {
+  const handleOpenChange = useCallback((isOpen: boolean) => {
+    setOpen(isOpen)
+    if (isOpen && !loaded) {
       loadNotifications()
     }
-  }, [open, loaded, loadNotifications])
+  }, [loaded, loadNotifications])
 
   // Subscribe to new notifications via Supabase Realtime
   useEffect(() => {
@@ -117,7 +120,7 @@ export function NotificationBell({ initialCount, userId }: { initialCount: numbe
   }
 
   function timeAgo(dateStr: string) {
-    const seconds = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000)
+    const seconds = Math.floor((now - new Date(dateStr).getTime()) / 1000)
     if (seconds < 60) return "just now"
     const minutes = Math.floor(seconds / 60)
     if (minutes < 60) return `${minutes}m ago`
@@ -129,7 +132,7 @@ export function NotificationBell({ initialCount, userId }: { initialCount: numbe
   }
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu open={open} onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger
         aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : "Notifications"}
         className={cn(

@@ -1,9 +1,7 @@
 export const metadata = { title: "Alumni Directory", description: "Search and connect with JNV alumni across India." }
 
-import Link from "next/link"
 import { Users } from "lucide-react"
 import { Pagination } from "@/components/shared/pagination"
-import { Button } from "@/components/ui/button"
 import { DirectorySearch } from "@/components/directory/directory-search"
 import { DirectoryFilters } from "@/components/directory/directory-filters"
 import { AlumniGrid } from "@/components/directory/alumni-grid"
@@ -42,19 +40,6 @@ export default async function DirectoryPage({
   })
 
   const totalPages = Math.max(1, Math.ceil(count / PAGE_SIZE))
-
-  // Build pagination href preserving current filters
-  function buildPageHref(targetPage: number): string {
-    const sp = new URLSearchParams()
-    if (q) sp.set("q", q)
-    if (batch) sp.set("batch", batch)
-    if (city) sp.set("city", city)
-    if (skill) sp.set("skill", skill)
-    if (industry) sp.set("industry", industry)
-    if (targetPage > 1) sp.set("page", targetPage.toString())
-    const qs = sp.toString()
-    return qs ? `/directory?${qs}` : "/directory"
-  }
 
   return (
     <div className="space-y-6">

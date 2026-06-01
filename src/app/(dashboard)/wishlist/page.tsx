@@ -34,7 +34,7 @@ export default async function WishlistPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Wishlist</h1>
-        <p className="text-muted-foreground text-sm mt-1">Items you've saved for later</p>
+        <p className="text-muted-foreground text-sm mt-1">Items you&apos;ve saved for later</p>
       </div>
 
       {wishlistItems.length > 0 ? (
@@ -56,7 +56,7 @@ export default async function WishlistPage() {
           <Heart className="h-12 w-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">Your wishlist is empty</h3>
           <p className="text-muted-foreground mt-1">
-            Browse the marketplace and save items you're interested in
+            Browse the marketplace and save items you&apos;re interested in
           </p>
           <Button className="mt-4" render={<Link href="/marketplace" />}>Browse Marketplace</Button>
         </div>

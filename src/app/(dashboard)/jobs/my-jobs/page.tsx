@@ -22,11 +22,14 @@ export default function MyJobsPage() {
   const [isPending, startTransition] = useTransition()
   const [confirmClose, setConfirmClose] = useState<string | null>(null)
 
-  useEffect(() => { loadJobs() }, [])
+  useEffect(() => {
+    let cancelled = false
+    getMyJobs().then((data) => { if (!cancelled) setJobs(data) })
+    return () => { cancelled = true }
+  }, [])
 
-  async function loadJobs() {
-    const data = await getMyJobs()
-    setJobs(data)
+  function loadJobs() {
+    getMyJobs().then(setJobs)
   }
 
   function handleClose(id: string) {

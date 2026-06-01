@@ -25,12 +25,13 @@ export default function MyListingsPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   useEffect(() => {
-    loadListings()
+    let cancelled = false
+    getMyListings(activeTab).then((data) => { if (!cancelled) setListings(data as ListingWithCategory[]) })
+    return () => { cancelled = true }
   }, [activeTab])
 
-  async function loadListings() {
-    const data = await getMyListings(activeTab)
-    setListings(data as ListingWithCategory[])
+  function loadListings() {
+    getMyListings(activeTab).then((data) => setListings(data as ListingWithCategory[]))
   }
 
   function handleStatusChange(id: string, status: "active" | "sold" | "inactive" | "deleted") {

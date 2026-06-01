@@ -22,7 +22,7 @@ interface UserTableProps {
   count: number
 }
 
-export function UserTable({ users, count }: UserTableProps) {
+export function UserTable({ users }: UserTableProps) {
   const [isPending, startTransition] = useTransition()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const router = useRouter()

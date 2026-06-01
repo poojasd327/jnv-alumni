@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
 import { getListings, getCategories } from "@/lib/actions/marketplace.actions"
 import { getWishlistedIds } from "@/lib/actions/wishlist.actions"
 import { ListingGrid } from "@/components/marketplace/listing-grid"

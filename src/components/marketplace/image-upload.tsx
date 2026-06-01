@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { Button } from "@/components/ui/button"
 import { ImagePlus, X, Loader2 } from "lucide-react"
 import Image from "next/image"
 import { createClient } from "@/lib/supabase/client"
