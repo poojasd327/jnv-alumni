@@ -1,8 +1,33 @@
 import { createClient } from "@/lib/supabase/server"
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 
-export async function GET() {
+function toCsvRow(values: string[]): string {
+  return values.map(v => {
+    const s = String(v ?? "")
+    if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+      return `"${s.replace(/"/g, '""')}"`
+    }
+    return s
+  }).join(",")
+}
+
+function arrayToCsv(rows: Record<string, unknown>[]): string {
+  if (rows.length === 0) return ""
+  const headers = Object.keys(rows[0])
+  const lines = [toCsvRow(headers)]
+  for (const row of rows) {
+    lines.push(toCsvRow(headers.map(h => {
+      const val = row[h]
+      if (Array.isArray(val)) return val.join("; ")
+      if (typeof val === "object" && val !== null) return JSON.stringify(val)
+      return String(val ?? "")
+    })))
+  }
+  return lines.join("\n")
+}
+
+export async function GET(request: NextRequest) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -19,6 +44,8 @@ export async function GET() {
       { status: 429, headers: { "Retry-After": String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
     )
   }
+
+  const format = request.nextUrl.searchParams.get("format") === "csv" ? "csv" : "json"
 
   // Fetch all user data in parallel
   const [
@@ -53,6 +80,42 @@ export async function GET() {
     supabase.from("wishlists").select("*").eq("user_id", user.id),
   ])
 
+  const dateStr = new Date().toISOString().split("T")[0]
+
+  if (format === "csv") {
+    const sections: { name: string; rows: Record<string, unknown>[] }[] = [
+      { name: "Profile", rows: profile ? [profile] : [] },
+      { name: "Jobs Posted", rows: jobs || [] },
+      { name: "Job Applications", rows: applications || [] },
+      { name: "Events Organized", rows: events || [] },
+      { name: "Event Registrations", rows: registrations || [] },
+      { name: "Marketplace Listings", rows: listings || [] },
+      { name: "Forum Posts", rows: forumPosts || [] },
+      { name: "Forum Comments", rows: forumComments || [] },
+      { name: "Businesses", rows: businesses || [] },
+      { name: "Media Uploads", rows: media || [] },
+      { name: "Mentorship (as Mentor)", rows: mentorshipAsMentor || [] },
+      { name: "Mentorship (as Mentee)", rows: mentorshipAsMentee || [] },
+      { name: "Announcements", rows: announcements || [] },
+      { name: "Wishlists", rows: wishlists || [] },
+    ]
+
+    const csvParts: string[] = [`# JNV Alumni Data Export — ${dateStr}`]
+    for (const section of sections) {
+      csvParts.push(`\n# ${section.name} (${section.rows.length} records)`)
+      if (section.rows.length > 0) {
+        csvParts.push(arrayToCsv(section.rows))
+      }
+    }
+
+    return new NextResponse(csvParts.join("\n"), {
+      headers: {
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": `attachment; filename="jnv-alumni-data-${dateStr}.csv"`,
+      },
+    })
+  }
+
   const exportData = {
     exported_at: new Date().toISOString(),
     user_id: user.id,
@@ -78,7 +141,7 @@ export async function GET() {
   return new NextResponse(json, {
     headers: {
       "Content-Type": "application/json",
-      "Content-Disposition": `attachment; filename="jnv-alumni-data-${new Date().toISOString().split("T")[0]}.json"`,
+      "Content-Disposition": `attachment; filename="jnv-alumni-data-${dateStr}.json"`,
     },
   })
 }

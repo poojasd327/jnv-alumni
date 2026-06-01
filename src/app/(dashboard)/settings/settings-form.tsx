@@ -231,18 +231,20 @@ function ChangePasswordSection() {
 
 function DataPrivacySection() {
   const [downloading, setDownloading] = useState(false)
+  const [format, setFormat] = useState<"json" | "csv">("json")
 
   async function handleExport() {
     setDownloading(true)
     try {
-      const response = await fetch("/api/export")
+      const response = await fetch(`/api/export${format === "csv" ? "?format=csv" : ""}`)
       if (!response.ok) throw new Error("Export failed")
 
       const blob = await response.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement("a")
       a.href = url
-      a.download = `jnv-alumni-data-${new Date().toISOString().split("T")[0]}.json`
+      const dateStr = new Date().toISOString().split("T")[0]
+      a.download = `jnv-alumni-data-${dateStr}.${format}`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -262,13 +264,29 @@ function DataPrivacySection() {
           <Download className="size-4" /> Data & Privacy
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-sm font-medium">Export Your Data</p>
-            <p className="text-xs text-muted-foreground">
-              Download all your data including profile, posts, listings, and activity as a JSON file.
-            </p>
+      <CardContent className="space-y-4">
+        <div>
+          <p className="text-sm font-medium">Export Your Data</p>
+          <p className="text-xs text-muted-foreground">
+            Download all your data including profile, posts, listings, and activity.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setFormat("json")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${format === "json" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            >
+              JSON
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormat("csv")}
+              className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${format === "csv" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"}`}
+            >
+              CSV
+            </button>
           </div>
           <Button
             variant="outline"
@@ -278,9 +296,14 @@ function DataPrivacySection() {
             disabled={downloading}
           >
             <Download className="size-4 mr-1" />
-            {downloading ? "Exporting..." : "Download Data"}
+            {downloading ? "Exporting..." : `Download ${format.toUpperCase()}`}
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground">
+          {format === "json"
+            ? "JSON format preserves full data structure — ideal for backups or data portability."
+            : "CSV format is spreadsheet-compatible — ideal for viewing in Excel or Google Sheets."}
+        </p>
       </CardContent>
     </Card>
   )

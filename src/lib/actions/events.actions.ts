@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { sanitizeSearch, sanitizeInput, formatDate } from "@/lib/utils"
 import { sendEmailAsync } from "@/lib/email"
 import { eventReminderEmail } from "@/lib/email-templates"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function getEvents(params: {
   q?: string
@@ -77,6 +78,9 @@ export async function createEvent(data: {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
+
+  const rl = checkRateLimit(`${user.id}:create_event`, RATE_LIMITS.write)
+  if (!rl.success) return { error: "Too many requests. Please wait before creating another event." }
 
   if (!data.title.trim()) return { error: "Title is required" }
   if (!data.event_date) return { error: "Event date is required" }

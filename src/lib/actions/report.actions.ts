@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { sanitizeInput } from "@/lib/utils"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 
 const VALID_CONTENT_TYPES = [
   "forum_post", "forum_comment", "marketplace_listing", "job",
@@ -25,6 +26,9 @@ export async function submitReport(data: {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Not authenticated" }
+
+  const rl = checkRateLimit(`${user.id}:report`, RATE_LIMITS.sensitive)
+  if (!rl.success) return { error: "Too many reports. Please wait before submitting another." }
 
   // Check for duplicate report
   const { data: existing } = await supabase

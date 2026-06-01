@@ -16,9 +16,10 @@ import { MarkAsSoldButton } from "@/components/marketplace/mark-as-sold-button"
 import { ShareButton } from "@/components/ui/share-button"
 import { ReportButton } from "@/components/ui/report-button"
 import { formatDate, getInitials } from "@/lib/utils"
-import { MapPin, Calendar, Eye, Pencil, ImageIcon } from "lucide-react"
+import { MapPin, Calendar, Eye, Pencil } from "lucide-react"
 import type { MarketplaceListing } from "@/lib/types/database.types"
 import { Breadcrumbs } from "@/components/shared/breadcrumbs"
+import { ImageGallery } from "@/components/marketplace/image-gallery"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -103,38 +104,14 @@ export default async function ListingDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Images */}
         <div className="lg:col-span-2 space-y-4">
-          {listing.images.length > 0 ? (
-            <div className="space-y-2">
-              <div className="relative aspect-[16/10] rounded-lg overflow-hidden border bg-muted">
-                <Image
-                  src={listing.images[0]}
-                  alt={listing.title}
-                  fill
-                  className="object-contain"
-                  sizes="(max-width: 1024px) 100vw, 66vw"
-                  priority
-                />
-                {listing.status === "sold" && (
-                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                    <span className="text-white font-bold text-2xl">SOLD</span>
-                  </div>
-                )}
+          <div className="relative">
+            <ImageGallery images={listing.images} title={listing.title} />
+            {listing.status === "sold" && listing.images.length > 0 && (
+              <div className="pointer-events-none absolute inset-0 rounded-lg bg-black/50 flex items-center justify-center">
+                <span className="text-white font-bold text-2xl">SOLD</span>
               </div>
-              {listing.images.length > 1 && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                  {listing.images.slice(1).map((img, i) => (
-                    <div key={i} className="relative aspect-square rounded-md overflow-hidden border">
-                      <Image src={img} alt={`Image ${i + 2}`} fill className="object-cover" sizes="150px" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="aspect-[16/10] rounded-lg border bg-muted flex items-center justify-center">
-              <ImageIcon className="h-16 w-16 text-muted-foreground/30" />
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Details */}
           <div className="space-y-4">

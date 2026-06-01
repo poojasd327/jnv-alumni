@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Command } from "cmdk"
+import { useFocusTrap } from "@/hooks/use-focus-trap"
 import {
   Users,
   Briefcase,
@@ -47,6 +48,7 @@ const QUICK_ACTIONS = [
 export function GlobalSearch() {
   const [open, setOpen] = useState(false)
   const router = useRouter()
+  const { containerRef, handleKeyDown: handleFocusTrapKeyDown } = useFocusTrap(open)
 
   // Toggle on Cmd+K or Ctrl+K
   useEffect(() => {
@@ -85,7 +87,7 @@ export function GlobalSearch() {
 
       {/* Command Dialog */}
       {open && (
-        <div className="fixed inset-0 z-50">
+        <div ref={containerRef} className="fixed inset-0 z-50" onKeyDown={handleFocusTrapKeyDown}>
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-black/50"

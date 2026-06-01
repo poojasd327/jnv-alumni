@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import type { JobType, ApplicationStatus } from "@/lib/types/database.types"
 import { sanitizeSearch, sanitizeInput } from "@/lib/utils"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function getJobs(params: {
   q?: string
@@ -78,6 +79,9 @@ export async function createJob(data: {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
+
+  const rl = checkRateLimit(`${user.id}:create_job`, RATE_LIMITS.write)
+  if (!rl.success) return { error: "Too many requests. Please wait before posting another job." }
 
   if (!data.title.trim() || !data.company.trim() || !data.description.trim()) {
     return { error: "Title, company, and description are required" }
@@ -184,6 +188,9 @@ export async function applyToJob(jobId: string, data: { cover_note?: string; res
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
+
+  const rl = checkRateLimit(`${user.id}:apply_job`, RATE_LIMITS.write)
+  if (!rl.success) return { error: "Too many applications. Please wait before applying again." }
 
   // Check if already applied
   const { data: existing } = await supabase

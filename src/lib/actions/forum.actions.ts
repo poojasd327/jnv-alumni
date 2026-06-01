@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { sanitizeSearch, sanitizeInput } from "@/lib/utils"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function getForumCategories() {
   const supabase = await createClient()
@@ -100,6 +101,9 @@ export async function createPost(data: {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
+  const rl = checkRateLimit(`${user.id}:create_post`, RATE_LIMITS.write)
+  if (!rl.success) return { error: "Too many posts. Please wait a moment before trying again." }
+
   if (!data.title.trim() || !data.content.trim()) return { error: "Title and content are required" }
   if (data.title.length > 300) return { error: "Title is too long (max 300 characters)" }
 
@@ -127,6 +131,9 @@ export async function createComment(data: {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
+
+  const rl = checkRateLimit(`${user.id}:create_comment`, RATE_LIMITS.write)
+  if (!rl.success) return { error: "Too many comments. Please wait a moment before trying again." }
 
   if (!data.content.trim()) return { error: "Comment cannot be empty" }
   if (data.content.length > 10000) return { error: "Comment is too long (max 10000 characters)" }
