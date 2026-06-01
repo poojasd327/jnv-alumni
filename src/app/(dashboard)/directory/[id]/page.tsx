@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
 import { getInitials, formatDate } from "@/lib/utils"
 import type { Profile } from "@/lib/types/database.types"
+import { MessageButton } from "@/components/messages/message-button"
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
@@ -62,6 +63,8 @@ export default async function AlumniDetailPage({
   }
 
   const profile = data as Profile
+  const { data: { user } } = await supabase.auth.getUser()
+  const isOwnProfile = user?.id === profile.id
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -124,6 +127,12 @@ export default async function AlumniDetailPage({
               <Calendar className="size-4" />
               <span>Member since {formatDate(profile.created_at)}</span>
             </div>
+
+            {!isOwnProfile && (
+              <div className="pt-2">
+                <MessageButton userId={profile.id} />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

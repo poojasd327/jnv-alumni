@@ -25,6 +25,7 @@ import {
   LayoutDashboard,
   Settings,
   Flag,
+  Mail,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -58,6 +59,7 @@ const iconMap: Record<string, React.ElementType> = {
   LayoutDashboard,
   Settings,
   Flag,
+  Mail,
 }
 
 export interface SidebarProps {

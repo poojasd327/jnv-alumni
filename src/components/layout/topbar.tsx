@@ -29,6 +29,7 @@ import { logout } from "@/lib/actions/auth.actions"
 
 interface TopbarProps {
   profile: {
+    id?: string
     full_name: string
     avatar_url: string | null
     role: string
@@ -61,7 +62,7 @@ export function Topbar({ profile, unreadNotifications = 0 }: TopbarProps) {
       <GlobalSearch />
 
       {/* Notifications */}
-      <NotificationBell initialCount={unreadNotifications} />
+      <NotificationBell initialCount={unreadNotifications} userId={profile.id} />
 
       {/* Dark Mode Toggle */}
       <ThemeToggle />

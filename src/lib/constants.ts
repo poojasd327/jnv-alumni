@@ -77,6 +77,7 @@ export const NAV_ITEMS = [
 ] as const
 
 export const PERSONAL_NAV_ITEMS = [
+  { label: "Messages", href: "/messages", icon: "Mail" },
   { label: "My Listings", href: "/marketplace/my-listings", icon: "Package" },
   { label: "Wishlist", href: "/wishlist", icon: "Heart" },
   { label: "Profile", href: "/profile", icon: "User" },

@@ -15,6 +15,7 @@ import {
   markAllAsRead,
   deleteNotification,
 } from "@/lib/actions/notifications.actions"
+import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
 interface Notification {
@@ -27,7 +28,7 @@ interface Notification {
   created_at: string
 }
 
-export function NotificationBell({ initialCount }: { initialCount: number }) {
+export function NotificationBell({ initialCount, userId }: { initialCount: number; userId?: string }) {
   const [open, setOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [unreadCount, setUnreadCount] = useState(initialCount)
@@ -49,14 +50,35 @@ export function NotificationBell({ initialCount }: { initialCount: number }) {
     }
   }, [open, loaded, loadNotifications])
 
-  // Refresh count periodically (every 60s)
+  // Subscribe to new notifications via Supabase Realtime
   useEffect(() => {
-    const interval = setInterval(async () => {
-      const result = await getNotifications(1)
-      setUnreadCount(result.unreadCount)
-    }, 60000)
-    return () => clearInterval(interval)
-  }, [])
+    if (!userId) return
+    const supabase = createClient()
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const newNotif = payload.new as Notification
+          setUnreadCount((prev) => prev + 1)
+          // If dropdown is open, add to the list
+          if (loaded) {
+            setNotifications((prev) => [newNotif, ...prev].slice(0, 10))
+          }
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [userId, loaded])
 
   const handleMarkAsRead = (notificationId: string) => {
     startTransition(async () => {
