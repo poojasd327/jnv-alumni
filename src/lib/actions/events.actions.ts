@@ -2,7 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
-import { sanitizeSearch, sanitizeInput } from "@/lib/utils"
+import { sanitizeSearch, sanitizeInput, formatDate } from "@/lib/utils"
+import { sendEmailAsync } from "@/lib/email"
+import { eventReminderEmail } from "@/lib/email-templates"
 
 export async function getEvents(params: {
   q?: string
@@ -121,6 +123,27 @@ export async function registerForEvent(eventId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: "Unauthorized" }
 
+  // Check capacity before registering
+  const { data: event } = await supabase
+    .from("events")
+    .select("title, event_date, max_attendees, status")
+    .eq("id", eventId)
+    .single()
+
+  if (!event) return { error: "Event not found" }
+  if (event.status !== "upcoming") return { error: "Registration is closed for this event" }
+
+  if (event.max_attendees) {
+    const { count } = await supabase
+      .from("event_registrations")
+      .select("*", { count: "exact", head: true })
+      .eq("event_id", eventId)
+
+    if ((count || 0) >= event.max_attendees) {
+      return { error: "This event has reached maximum capacity" }
+    }
+  }
+
   const { error } = await supabase
     .from("event_registrations")
     .insert({ event_id: eventId, user_id: user.id })
@@ -129,6 +152,24 @@ export async function registerForEvent(eventId: string) {
     if (error.code === "23505") return { error: "Already registered" }
     return { error: error.message }
   }
+
+  // Fire-and-forget RSVP confirmation email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", user.id)
+    .single()
+
+  if (profile?.email) {
+    const email = eventReminderEmail(
+      profile.full_name || "Alumni",
+      event.title,
+      formatDate(event.event_date),
+      eventId
+    )
+    sendEmailAsync({ to: profile.email, subject: `RSVP Confirmed: ${event.title}`, html: email.html })
+  }
+
   revalidatePath(`/events/${eventId}`)
   return { success: true }
 }

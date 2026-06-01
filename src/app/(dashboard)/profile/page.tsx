@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/server"
 import { getInitials, formatDate } from "@/lib/utils"
 import { redirect } from "next/navigation"
+import { ProfileCompleteness } from "@/components/profile/profile-completeness"
 import type { Profile } from "@/lib/types/database.types"
 
 export default async function ProfilePage() {
@@ -46,6 +47,9 @@ export default async function ProfilePage() {
             Edit Profile
         </Button>
       </div>
+
+      {/* Completeness indicator */}
+      <ProfileCompleteness profile={profile} />
 
       {/* Profile Card */}
       <Card>
