@@ -35,6 +35,11 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
+  // Allow health check without auth
+  if (pathname === "/api/health") {
+    return supabaseResponse
+  }
+
   // Public routes that don't require auth
   const publicRoutes = ["/login", "/register", "/forgot-password", "/api/auth/callback", "/privacy", "/terms"]
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route))
