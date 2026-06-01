@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { INDUSTRIES } from "@/lib/constants"
+import { INDUSTRIES, INDIAN_STATES } from "@/lib/constants"
 
 // Generate passing year options (JNV typically 1986 onwards)
 const currentYear = new Date().getFullYear()
@@ -31,6 +31,7 @@ export function DirectoryFilters() {
   const city = searchParams.get("city") || ""
   const industry = searchParams.get("industry") || ""
   const skill = searchParams.get("skill") || ""
+  const jnvState = searchParams.get("jnv_state") || ""
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
@@ -67,7 +68,7 @@ export function DirectoryFilters() {
     }
   }
 
-  const hasFilters = batch || city || industry || skill
+  const hasFilters = batch || city || industry || skill || jnvState
 
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
@@ -81,7 +82,27 @@ export function DirectoryFilters() {
         )}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {/* JNV State */}
+        <div className="space-y-1.5">
+          <Label className="text-xs">JNV State</Label>
+          <Select
+            value={jnvState}
+            onValueChange={(val) => updateFilter("jnv_state", val)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All states" />
+            </SelectTrigger>
+            <SelectContent>
+              {INDIAN_STATES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Passing Year / Batch */}
         <div className="space-y-1.5">
           <Label className="text-xs">Passing Year</Label>

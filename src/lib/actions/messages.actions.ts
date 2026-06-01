@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { sanitizeInput } from "@/lib/utils"
+import { sendEmailAsync } from "@/lib/email"
+import { newMessageEmail } from "@/lib/email-templates"
 
 export async function getConversations() {
   const supabase = await createClient()
@@ -160,6 +162,22 @@ export async function sendMessage(conversationId: string, content: string) {
     .from("conversations")
     .update({ last_message_at: new Date().toISOString() })
     .eq("id", conversationId)
+
+  // Fire-and-forget email notification to recipient
+  const recipientId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1
+  const [{ data: senderProfile }, { data: recipientProfile }] = await Promise.all([
+    supabase.from("profiles").select("full_name").eq("id", user.id).single(),
+    supabase.from("profiles").select("full_name, email").eq("id", recipientId).single(),
+  ])
+
+  if (recipientProfile?.email) {
+    const email = newMessageEmail(
+      recipientProfile.full_name || "Alumni",
+      senderProfile?.full_name || "Someone",
+      sanitized
+    )
+    sendEmailAsync({ to: recipientProfile.email, ...email })
+  }
 
   revalidatePath("/messages")
   return { success: true }

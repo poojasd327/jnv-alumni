@@ -25,6 +25,8 @@ export default async function DirectoryPage({
   const skill = typeof params.skill === "string" ? params.skill : undefined
   const industry =
     typeof params.industry === "string" ? params.industry : undefined
+  const jnv_state =
+    typeof params.jnv_state === "string" ? params.jnv_state : undefined
   const page = typeof params.page === "string" ? params.page : "1"
 
   const currentPage = Math.max(1, parseInt(page, 10))
@@ -35,6 +37,7 @@ export default async function DirectoryPage({
     city,
     skill,
     industry,
+    jnv_state,
     page: currentPage.toString(),
   })
 

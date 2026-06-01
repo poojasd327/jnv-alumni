@@ -12,6 +12,7 @@ interface SearchAlumniParams {
   city?: string
   skill?: string
   industry?: string
+  jnv_state?: string
   page?: string
 }
 
@@ -64,6 +65,11 @@ export async function searchAlumni(
   // Filter by industry (exact match)
   if (params.industry && params.industry.trim()) {
     query = query.eq("industry", params.industry.trim())
+  }
+
+  // Filter by JNV state
+  if (params.jnv_state && params.jnv_state.trim()) {
+    query = query.eq("jnv_state", params.jnv_state.trim())
   }
 
   // Order and paginate

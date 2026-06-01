@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
+import { sendEmailAsync } from "@/lib/email"
+import { welcomeEmail, accountRejectedEmail } from "@/lib/email-templates"
 import type { ApprovalStatus, Profile } from "@/lib/types/database.types"
 
 async function requireAdmin() {
@@ -34,6 +36,13 @@ export async function getPendingUsers() {
 export async function approveUser(userId: string) {
   const { supabase, userId: adminId } = await requireAdmin()
 
+  // Fetch user info for email before updating
+  const { data: userProfile } = await supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", userId)
+    .single()
+
   const { error } = await supabase
     .from("profiles")
     .update({
@@ -45,6 +54,12 @@ export async function approveUser(userId: string) {
 
   if (error) return { error: error.message }
 
+  // Fire-and-forget welcome email
+  if (userProfile?.email) {
+    const email = welcomeEmail(userProfile.full_name || "Alumni")
+    sendEmailAsync({ to: userProfile.email, ...email })
+  }
+
   revalidatePath("/admin")
   revalidatePath("/admin/users")
   return { success: true }
@@ -53,12 +68,25 @@ export async function approveUser(userId: string) {
 export async function rejectUser(userId: string) {
   const { supabase } = await requireAdmin()
 
+  // Fetch user info for email before updating
+  const { data: userProfile } = await supabase
+    .from("profiles")
+    .select("full_name, email")
+    .eq("id", userId)
+    .single()
+
   const { error } = await supabase
     .from("profiles")
     .update({ approval_status: "rejected" })
     .eq("id", userId)
 
   if (error) return { error: error.message }
+
+  // Fire-and-forget rejection email
+  if (userProfile?.email) {
+    const email = accountRejectedEmail(userProfile.full_name || "Alumni")
+    sendEmailAsync({ to: userProfile.email, ...email })
+  }
 
   revalidatePath("/admin")
   revalidatePath("/admin/users")
@@ -85,6 +113,46 @@ export async function getAllUsers(params?: { status?: string; page?: string }): 
 
   if (error) return { users: [], count: 0 }
   return { users: data || [], count: count || 0 }
+}
+
+export async function bulkApproveUsers(userIds: string[]) {
+  const { supabase, userId: adminId } = await requireAdmin()
+  if (userIds.length === 0) return { error: "No users selected" }
+  if (userIds.length > 100) return { error: "Maximum 100 users at once" }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      approval_status: "approved",
+      approved_by: adminId,
+      approved_at: new Date().toISOString(),
+    })
+    .in("id", userIds)
+    .eq("approval_status", "pending")
+
+  if (error) return { error: error.message }
+
+  revalidatePath("/admin")
+  revalidatePath("/admin/users")
+  return { success: true, count: userIds.length }
+}
+
+export async function bulkRejectUsers(userIds: string[]) {
+  const { supabase } = await requireAdmin()
+  if (userIds.length === 0) return { error: "No users selected" }
+  if (userIds.length > 100) return { error: "Maximum 100 users at once" }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ approval_status: "rejected" })
+    .in("id", userIds)
+    .eq("approval_status", "pending")
+
+  if (error) return { error: error.message }
+
+  revalidatePath("/admin")
+  revalidatePath("/admin/users")
+  return { success: true, count: userIds.length }
 }
 
 export async function updateUserRole(userId: string, role: "alumni" | "admin") {

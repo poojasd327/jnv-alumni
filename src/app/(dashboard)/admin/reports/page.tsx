@@ -1,5 +1,6 @@
 import { getReports, getPendingReportsCount } from "@/lib/actions/report.actions"
 import { ReportQueue } from "@/components/admin/report-queue"
+import { AdminExportButton } from "@/components/admin/admin-export-button"
 import { Flag } from "lucide-react"
 
 export const metadata = { title: "Admin - Reports" }
@@ -15,11 +16,14 @@ export default async function AdminReportsPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Content Reports</h1>
-        <p className="text-muted-foreground text-sm mt-1">
-          Review reported content and take action ({pendingCount} pending)
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Content Reports</h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Review reported content and take action ({pendingCount} pending)
+          </p>
+        </div>
+        <AdminExportButton type="reports" label="Export Reports CSV" />
       </div>
 
       {reports.length > 0 ? (
