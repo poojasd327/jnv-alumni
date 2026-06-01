@@ -44,7 +44,8 @@ export default async function MediaPage({ searchParams }: { searchParams: Promis
         <div className="text-center py-8 sm:py-12">
           <ImageIcon className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No media yet</h3>
-          <p className="text-muted-foreground mt-1">Upload photos and videos</p>
+          <p className="text-muted-foreground mt-1">Share photos and videos from your JNV memories</p>
+          <Button className="mt-4" render={<Link href="/media/upload" />}>Upload Media</Button>
         </div>
       ) : (
         <>

@@ -26,11 +26,18 @@ export default function NewPostPage() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
+    const title = (fd.get("title") as string).trim()
+    const content = (fd.get("content") as string).trim()
+
+    if (!categoryId) { toast.error("Please select a category"); return }
+    if (title.length < 3) { toast.error("Title must be at least 3 characters"); return }
+    if (content.length < 10) { toast.error("Content must be at least 10 characters"); return }
+
     startTransition(async () => {
       const result = await createPost({
         category_id: categoryId,
-        title: fd.get("title") as string,
-        content: fd.get("content") as string,
+        title,
+        content,
       })
       if (result.error) { toast.error(result.error); return }
       toast.success("Post created!")

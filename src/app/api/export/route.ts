@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
+import { checkRateLimit, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function GET() {
   const supabase = await createClient()
@@ -9,6 +10,14 @@ export async function GET() {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  const rateCheck = checkRateLimit(`${user.id}:export`, RATE_LIMITS.sensitive)
+  if (!rateCheck.success) {
+    return NextResponse.json(
+      { error: "Too many export requests. Please try again later." },
+      { status: 429, headers: { "Retry-After": String(Math.ceil((rateCheck.resetAt - Date.now()) / 1000)) } }
+    )
   }
 
   // Fetch all user data in parallel

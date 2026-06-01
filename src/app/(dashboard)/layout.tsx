@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Topbar } from "@/components/layout/topbar"
 import { getUnreadCount } from "@/lib/actions/notifications.actions"
+import { trackActivity } from "@/lib/actions/activity.actions"
 import type { Profile } from "@/lib/types/database.types"
 
 export default async function DashboardLayout({
@@ -39,6 +40,9 @@ export default async function DashboardLayout({
   }
 
   const unreadCount = await getUnreadCount()
+
+  // Fire-and-forget activity tracking (throttled to once per 5 min)
+  trackActivity().catch(() => {})
 
   return (
     <div className="flex h-screen">

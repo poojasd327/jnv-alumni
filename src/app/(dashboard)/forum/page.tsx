@@ -43,7 +43,8 @@ export default async function ForumPage({ searchParams }: { searchParams: Promis
         <div className="text-center py-8 sm:py-12">
           <MessageSquare className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No discussions yet</h3>
-          <p className="text-muted-foreground mt-1">Start a conversation</p>
+          <p className="text-muted-foreground mt-1">Start a conversation with fellow alumni</p>
+          <Button className="mt-4" render={<Link href="/forum/new" />}>Start Discussion</Button>
         </div>
       ) : (
         <>

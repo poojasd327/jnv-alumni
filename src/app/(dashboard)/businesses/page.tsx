@@ -42,6 +42,8 @@ export default async function BusinessesPage({ searchParams }: { searchParams: P
         <div className="text-center py-8 sm:py-12">
           <Building2 className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No businesses found</h3>
+          <p className="text-muted-foreground mt-1">List your business and connect with alumni customers</p>
+          <Button className="mt-4" render={<Link href="/businesses/new" />}>List Your Business</Button>
         </div>
       ) : (
         <>

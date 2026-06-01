@@ -25,23 +25,35 @@ export default function NewJobPage() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
-    if (!jobType) {
-      toast.error("Please select a job type")
-      return
-    }
+    const title = (formData.get("title") as string).trim()
+    const company = (formData.get("company") as string).trim()
+    const description = (formData.get("description") as string).trim()
+
+    if (title.length < 3) { toast.error("Job title must be at least 3 characters"); return }
+    if (company.length < 2) { toast.error("Company name must be at least 2 characters"); return }
+    if (description.length < 20) { toast.error("Description must be at least 20 characters"); return }
+    if (!jobType) { toast.error("Please select a job type"); return }
+
+    const expMin = formData.get("experience_min") ? Number(formData.get("experience_min")) : null
+    const expMax = formData.get("experience_max") ? Number(formData.get("experience_max")) : null
+    if (expMin !== null && expMax !== null && expMin > expMax) { toast.error("Min experience cannot exceed max experience"); return }
+
+    const salMin = formData.get("salary_min") ? Number(formData.get("salary_min")) : null
+    const salMax = formData.get("salary_max") ? Number(formData.get("salary_max")) : null
+    if (salMin !== null && salMax !== null && salMin > salMax) { toast.error("Min salary cannot exceed max salary"); return }
 
     startTransition(async () => {
       const result = await createJob({
-        title: formData.get("title") as string,
-        company: formData.get("company") as string,
-        description: formData.get("description") as string,
+        title,
+        company,
+        description,
         job_type: jobType,
         location_city: formData.get("location_city") as string,
         location_state: locationState,
-        experience_min: formData.get("experience_min") ? Number(formData.get("experience_min")) : null,
-        experience_max: formData.get("experience_max") ? Number(formData.get("experience_max")) : null,
-        salary_min: formData.get("salary_min") ? Number(formData.get("salary_min")) : null,
-        salary_max: formData.get("salary_max") ? Number(formData.get("salary_max")) : null,
+        experience_min: expMin,
+        experience_max: expMax,
+        salary_min: salMin,
+        salary_max: salMax,
         skills_required: (formData.get("skills") as string)?.split(",").map((s) => s.trim()).filter(Boolean) || [],
         referral_available: referral,
         contact_email: formData.get("contact_email") as string,

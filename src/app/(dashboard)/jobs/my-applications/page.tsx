@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { getMyApplications } from "@/lib/actions/jobs.actions"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { FileText } from "lucide-react"
 import { formatDate } from "@/lib/utils"
 import Link from "next/link"
@@ -31,10 +32,11 @@ export default function MyApplicationsPage() {
       </div>
 
       {applications.length === 0 ? (
-        <div className="text-center py-12">
+        <div className="text-center py-8 sm:py-12">
           <FileText className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No applications yet</h3>
-          <p className="text-muted-foreground mt-1">Browse jobs and start applying</p>
+          <p className="text-muted-foreground mt-1">Browse jobs posted by fellow alumni and start applying</p>
+          <Button className="mt-4" render={<Link href="/jobs" />}>Browse Jobs</Button>
         </div>
       ) : (
         <div className="space-y-3">

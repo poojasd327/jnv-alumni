@@ -79,7 +79,8 @@ export default async function JobsPage({
         <div className="text-center py-8 sm:py-12">
           <Briefcase className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No jobs found</h3>
-          <p className="text-muted-foreground mt-1">Try adjusting your filters</p>
+          <p className="text-muted-foreground mt-1">Try adjusting your filters or post a new opportunity</p>
+          <Button className="mt-4" render={<Link href="/jobs/new" />}>Post a Job</Button>
         </div>
       ) : (
         <>

@@ -51,6 +51,8 @@ export default async function AnnouncementsPage({ searchParams }: { searchParams
         <div className="text-center py-8 sm:py-12">
           <Megaphone className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No announcements</h3>
+          <p className="text-muted-foreground mt-1">Share news and updates with the community</p>
+          <Button className="mt-4" render={<Link href="/announcements/new" />}>Post Announcement</Button>
         </div>
       ) : (
         <>

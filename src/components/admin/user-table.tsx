@@ -69,16 +69,16 @@ export function UserTable({ users, count }: UserTableProps) {
         {users.map((user) => (
           <Card key={user.id}>
             <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium">{user.full_name}</span>
                     <Badge variant={statusColors[user.approval_status] || "outline"}>
                       {user.approval_status}
                     </Badge>
                     {user.role === "admin" && <Badge>Admin</Badge>}
                   </div>
-                  <p className="text-sm text-muted-foreground">{user.email} &middot; {user.mobile}</p>
+                  <p className="text-sm text-muted-foreground truncate">{user.email} &middot; {user.mobile}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {user.jnv_school} &middot; Batch {user.batch_start_year}-{user.passing_year} &middot; Joined {formatDate(user.created_at)}
                   </p>
@@ -88,6 +88,7 @@ export function UserTable({ users, count }: UserTableProps) {
                     <>
                       <Button
                         size="sm"
+                        className="flex-1 sm:flex-none"
                         onClick={() => handleAction(() => approveUser(user.id), `${user.full_name} approved`)}
                         disabled={isPending}
                       >
@@ -96,6 +97,7 @@ export function UserTable({ users, count }: UserTableProps) {
                       <Button
                         size="sm"
                         variant="outline"
+                        className="flex-1 sm:flex-none"
                         onClick={() => handleAction(() => rejectUser(user.id), `${user.full_name} rejected`)}
                         disabled={isPending}
                       >

@@ -42,7 +42,8 @@ export default async function MentorshipPage({ searchParams }: { searchParams: P
         <div className="text-center py-8 sm:py-12">
           <HandHelping className="size-12 mx-auto text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-medium">No mentors found</h3>
-          <p className="text-muted-foreground mt-1">Try broadening your search</p>
+          <p className="text-muted-foreground mt-1">Try broadening your search or offer to mentor others</p>
+          <Button className="mt-4" variant="outline" render={<Link href="/profile" />}>Update Your Profile</Button>
         </div>
       ) : (
         <>

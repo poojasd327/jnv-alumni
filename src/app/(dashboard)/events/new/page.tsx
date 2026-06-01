@@ -23,13 +23,21 @@ export default function NewEventPage() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
+    const title = (fd.get("title") as string).trim()
+    const description = (fd.get("description") as string).trim()
+    const eventDate = fd.get("event_date") as string
+    const endDate = (fd.get("end_date") as string) || undefined
+
+    if (title.length < 3) { toast.error("Event title must be at least 3 characters"); return }
+    if (description.length < 10) { toast.error("Description must be at least 10 characters"); return }
+    if (endDate && new Date(endDate) <= new Date(eventDate)) { toast.error("End date must be after start date"); return }
 
     startTransition(async () => {
       const result = await createEvent({
-        title: fd.get("title") as string,
-        description: fd.get("description") as string,
-        event_date: fd.get("event_date") as string,
-        end_date: (fd.get("end_date") as string) || undefined,
+        title,
+        description,
+        event_date: eventDate,
+        end_date: endDate,
         venue: fd.get("venue") as string,
         location_city: fd.get("location_city") as string,
         location_state: locationState,

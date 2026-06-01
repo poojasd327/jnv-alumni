@@ -23,10 +23,16 @@ export default function NewBusinessPage() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
+    const name = (fd.get("name") as string).trim()
+    const description = (fd.get("description") as string).trim()
+
+    if (name.length < 2) { toast.error("Business name must be at least 2 characters"); return }
+    if (description.length < 10) { toast.error("Description must be at least 10 characters"); return }
+
     startTransition(async () => {
       const result = await createBusiness({
-        name: fd.get("name") as string,
-        description: fd.get("description") as string,
+        name,
+        description,
         category,
         services: (fd.get("services") as string)?.split(",").map((s) => s.trim()).filter(Boolean) || [],
         location_city: fd.get("location_city") as string,
